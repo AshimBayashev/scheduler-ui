@@ -8,6 +8,9 @@ export interface CalendarEvent {
   end: Date
   allDay?: boolean
   color?: string
+  /** Развёрнутый слот рутины (не разовое дело) */
+  isRoutine?: boolean
+  routineId?: string
 }
 
 export interface EventFormData {

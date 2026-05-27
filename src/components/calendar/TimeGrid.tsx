@@ -30,8 +30,13 @@ export function TimeGrid({ days, events, onSlotClick, onEventClick }: TimeGridPr
     }
   }, [nowTop])
 
-  const getEventsForDay = (day: Date) =>
-    events.filter((e) => !e.allDay && isSameDay(e.start, day))
+  const getItemsForDay = (day: Date) =>
+    events
+      .filter((e) => !e.allDay && isSameDay(e.start, day))
+      .sort((a, b) => {
+        if (a.isRoutine === b.isRoutine) return a.start.getTime() - b.start.getTime()
+        return a.isRoutine ? -1 : 1
+      })
 
   const handleSlotClick = (day: Date, hour: number) => {
     const slot = new Date(day)
@@ -98,7 +103,7 @@ export function TimeGrid({ days, events, onSlotClick, onEventClick }: TimeGridPr
                   <div className="now-line" style={{ top: nowTop }} />
                 )}
 
-                {getEventsForDay(day).map((event) => (
+                {getItemsForDay(day).map((event) => (
                   <EventBlock key={event.id} event={event} onClick={onEventClick} />
                 ))}
               </div>

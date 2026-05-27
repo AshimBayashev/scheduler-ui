@@ -1,24 +1,39 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { CalendarEvent, CalendarView, EventFormData } from '../../types/event'
+import type { Routine } from '../../types/routine'
 import { useEvents } from '../../context/EventsContext'
+import { useRoutines } from '../../context/RoutinesContext'
 import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
+import { expandRoutines, getVisibleRange } from '../../utils/expandRoutines'
+import { findRoutineById } from '../../utils/routineUtils'
 import { createDefaultEnd, navigateDate } from '../../utils/dateUtils'
 import { DayView } from '../calendar/DayView'
 import { WeekView } from '../calendar/WeekView'
 import { MonthView } from '../calendar/MonthView'
 import { EventModal } from '../modals/EventModal'
+import { RoutineModal } from '../modals/RoutineModal'
 import { CalendarHeader } from './CalendarHeader'
 import { Sidebar } from './Sidebar'
 import './AppLayout.css'
 
 export function AppLayout() {
   const isMobile = useMediaQuery(MOBILE_BREAKPOINT)
-  const { events, loading, addEvent, updateEvent, deleteEvent } = useEvents()
+  const { events, loading: eventsLoading, addEvent, updateEvent, deleteEvent } = useEvents()
+  const {
+    routines,
+    loading: routinesLoading,
+    addRoutine,
+    updateRoutine,
+    deleteRoutine,
+  } = useRoutines()
+
   const [currentDate, setCurrentDate] = useState(new Date())
   const [view, setView] = useState<CalendarView>('week')
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [modalOpen, setModalOpen] = useState(false)
+  const [eventModalOpen, setEventModalOpen] = useState(false)
+  const [routineModalOpen, setRoutineModalOpen] = useState(false)
   const [editingEvent, setEditingEvent] = useState<CalendarEvent | null>(null)
+  const [editingRoutine, setEditingRoutine] = useState<Routine | null>(null)
   const [draftSlot, setDraftSlot] = useState<{ start: Date; end: Date } | null>(null)
 
   useEffect(() => {
@@ -34,33 +49,64 @@ export function AppLayout() {
     }
   }, [sidebarOpen])
 
+  const loading = eventsLoading || routinesLoading
+
+  const calendarItems = useMemo(() => {
+    const { from, to } = getVisibleRange(currentDate, view)
+    const expanded = expandRoutines(routines, from, to)
+    return [...expanded, ...events]
+  }, [routines, events, currentDate, view])
+
   const eventDates = useMemo(
-    () => events.map((e) => e.start),
-    [events],
+    () => calendarItems.map((e) => e.start),
+    [calendarItems],
   )
 
   const openNewEventModal = useCallback((start?: Date) => {
     const slotStart = start ?? new Date()
     setEditingEvent(null)
     setDraftSlot({ start: slotStart, end: createDefaultEnd(slotStart) })
-    setModalOpen(true)
+    setEventModalOpen(true)
   }, [])
 
-  const openEditModal = useCallback((event: CalendarEvent) => {
+  const openNewRoutineModal = useCallback(() => {
+    setEditingRoutine(null)
+    setRoutineModalOpen(true)
+  }, [])
+
+  const openEditEventModal = useCallback((event: CalendarEvent) => {
+    if (event.isRoutine && event.routineId) {
+      const routine = findRoutineById(routines, event.routineId)
+      if (routine) {
+        setEditingRoutine(routine)
+        setRoutineModalOpen(true)
+      }
+      return
+    }
     setEditingEvent(event)
     setDraftSlot(null)
-    setModalOpen(true)
+    setEventModalOpen(true)
+  }, [routines])
+
+  const openEditRoutineFromSidebar = useCallback((routine: Routine) => {
+    setEditingRoutine(routine)
+    setRoutineModalOpen(true)
   }, [])
 
-  const closeModal = useCallback(() => {
-    setModalOpen(false)
+  const closeEventModal = useCallback(() => {
+    setEventModalOpen(false)
     setEditingEvent(null)
     setDraftSlot(null)
   }, [])
 
-  const handleSave = useCallback(
+  const closeRoutineModal = useCallback(() => {
+    setRoutineModalOpen(false)
+    setEditingRoutine(null)
+  }, [])
+
+  const handleEventSave = useCallback(
     async (data: EventFormData) => {
-      if (editingEvent) {
+      if (editingEvent && !editingEvent.isRoutine) {
         await updateEvent(editingEvent.id, data)
       } else {
         await addEvent(data)
@@ -69,12 +115,30 @@ export function AppLayout() {
     [editingEvent, addEvent, updateEvent],
   )
 
-  const handleDelete = useCallback(async () => {
-    if (editingEvent) {
+  const handleEventDelete = useCallback(async () => {
+    if (editingEvent && !editingEvent.isRoutine) {
       await deleteEvent(editingEvent.id)
-      closeModal()
+      closeEventModal()
     }
-  }, [editingEvent, deleteEvent, closeModal])
+  }, [editingEvent, deleteEvent, closeEventModal])
+
+  const handleRoutineSave = useCallback(
+    async (data: Parameters<typeof addRoutine>[0]) => {
+      if (editingRoutine) {
+        await updateRoutine(editingRoutine.id, data)
+      } else {
+        await addRoutine(data)
+      }
+    },
+    [editingRoutine, addRoutine, updateRoutine],
+  )
+
+  const handleRoutineDelete = useCallback(async () => {
+    if (editingRoutine) {
+      await deleteRoutine(editingRoutine.id)
+      closeRoutineModal()
+    }
+  }, [editingRoutine, deleteRoutine, closeRoutineModal])
 
   const handleDayClick = useCallback(
     (date: Date) => {
@@ -87,7 +151,7 @@ export function AppLayout() {
     [openNewEventModal, isMobile],
   )
 
-  const modalInitialData = editingEvent
+  const eventModalInitialData = editingEvent && !editingEvent.isRoutine
     ? {
         title: editingEvent.title,
         description: editingEvent.description ?? '',
@@ -114,6 +178,9 @@ export function AppLayout() {
         selectedDate={currentDate}
         onDateSelect={setCurrentDate}
         onNewEvent={() => openNewEventModal()}
+        onNewRoutine={() => openNewRoutineModal()}
+        onEditRoutine={openEditRoutineFromSidebar}
+        routines={routines}
         onClose={isMobile ? () => setSidebarOpen(false) : undefined}
         isOpen={!isMobile || sidebarOpen}
         eventDates={eventDates}
@@ -130,32 +197,32 @@ export function AppLayout() {
         />
 
         <div className="calendar-content">
-          {loading && events.length === 0 ? (
-            <div className="calendar-loading">Загрузка дел...</div>
+          {loading && calendarItems.length === 0 ? (
+            <div className="calendar-loading">Загрузка...</div>
           ) : (
             <>
               {view === 'day' && (
                 <DayView
                   date={currentDate}
-                  events={events}
+                  events={calendarItems}
                   onSlotClick={openNewEventModal}
-                  onEventClick={openEditModal}
+                  onEventClick={openEditEventModal}
                 />
               )}
               {view === 'week' && (
                 <WeekView
                   date={currentDate}
-                  events={events}
+                  events={calendarItems}
                   onSlotClick={openNewEventModal}
-                  onEventClick={openEditModal}
+                  onEventClick={openEditEventModal}
                 />
               )}
               {view === 'month' && (
                 <MonthView
                   date={currentDate}
-                  events={events}
+                  events={calendarItems}
                   onDayClick={handleDayClick}
-                  onEventClick={openEditModal}
+                  onEventClick={openEditEventModal}
                 />
               )}
             </>
@@ -175,12 +242,20 @@ export function AppLayout() {
       )}
 
       <EventModal
-        isOpen={modalOpen}
-        onClose={closeModal}
-        onSave={handleSave}
-        onDelete={editingEvent ? handleDelete : undefined}
-        initialData={modalInitialData}
-        editingEvent={editingEvent}
+        isOpen={eventModalOpen}
+        onClose={closeEventModal}
+        onSave={handleEventSave}
+        onDelete={editingEvent && !editingEvent.isRoutine ? handleEventDelete : undefined}
+        initialData={eventModalInitialData}
+        editingEvent={editingEvent && !editingEvent.isRoutine ? editingEvent : null}
+      />
+
+      <RoutineModal
+        isOpen={routineModalOpen}
+        onClose={closeRoutineModal}
+        onSave={handleRoutineSave}
+        onDelete={editingRoutine ? handleRoutineDelete : undefined}
+        editingRoutine={editingRoutine}
       />
     </div>
   )

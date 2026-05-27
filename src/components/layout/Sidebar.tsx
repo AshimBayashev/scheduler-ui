@@ -1,12 +1,17 @@
 import { MiniCalendar } from '../calendar/MiniCalendar'
 import { ThemeToggle } from '../common/ThemeToggle'
 import { useAuth } from '../../context/AuthContext'
+import type { Routine } from '../../types/routine'
+import { formatRoutineDays } from '../../utils/routineUtils'
 import './Sidebar.css'
 
 interface SidebarProps {
   selectedDate: Date
   onDateSelect: (date: Date) => void
   onNewEvent: () => void
+  onNewRoutine: () => void
+  onEditRoutine: (routine: Routine) => void
+  routines: Routine[]
   onClose?: () => void
   isOpen?: boolean
   eventDates: Date[]
@@ -16,6 +21,9 @@ export function Sidebar({
   selectedDate,
   onDateSelect,
   onNewEvent,
+  onNewRoutine,
+  onEditRoutine,
+  routines,
   onClose,
   isOpen = false,
   eventDates,
@@ -29,6 +37,11 @@ export function Sidebar({
 
   const handleNewEvent = () => {
     onNewEvent()
+    onClose?.()
+  }
+
+  const handleNewRoutine = () => {
+    onNewRoutine()
     onClose?.()
   }
 
@@ -62,14 +75,52 @@ export function Sidebar({
         Новое дело
       </button>
 
+      <button type="button" className="sidebar-routines-btn" onClick={handleNewRoutine}>
+        <span className="sidebar-new-icon">↻</span>
+        Новая рутина
+      </button>
+
       <MiniCalendar
         selectedDate={selectedDate}
         onDateSelect={handleDateSelect}
         eventDates={eventDates}
       />
 
+      <div className="sidebar-routines">
+        <h3 className="sidebar-routines-title">Рутины</h3>
+        {routines.length === 0 ? (
+          <p className="sidebar-routines-empty">Повторяющиеся действия по дням недели</p>
+        ) : (
+          <div className="sidebar-routines-list">
+            {routines.map((routine) => (
+              <button
+                key={routine.id}
+                type="button"
+                className="sidebar-routine-item"
+                onClick={() => {
+                  onEditRoutine(routine)
+                  onClose?.()
+                }}
+              >
+                <span
+                  className="sidebar-routine-dot"
+                  style={{ color: routine.color }}
+                  aria-hidden="true"
+                />
+                <span className="sidebar-routine-info">
+                  <span className="sidebar-routine-name">{routine.title}</span>
+                  <span className="sidebar-routine-meta">
+                    {formatRoutineDays(routine.daysOfWeek)} · {routine.startTime}
+                  </span>
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
       <div className="sidebar-hint">
-        <p>Записывай дела сразу — потом не вспомнишь, что ел на завтрак.</p>
+        <p>Рутины — каркас дня. Дела — разовые записи поверх.</p>
       </div>
 
       <div className="sidebar-user">

@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import type { Routine, RoutineFormData } from '../../types/routine'
 import { DAY_PRESETS, WEEKDAY_LABELS } from '../../types/routine'
+import { ColorPicker } from '../common/ColorPicker'
+import { resolveFormColor } from '../../data/colorPalette'
 import '../modals/EventModal.css'
 import './RoutineModal.css'
 
@@ -24,6 +26,7 @@ export function RoutineModal({
   const [startTime, setStartTime] = useState('08:00')
   const [durationMinutes, setDurationMinutes] = useState(30)
   const [daysOfWeek, setDaysOfWeek] = useState<number[]>([...DAY_PRESETS.everyDay])
+  const [color, setColor] = useState<string>(() => resolveFormColor())
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
@@ -33,6 +36,7 @@ export function RoutineModal({
       setStartTime(editingRoutine?.startTime ?? '08:00')
       setDurationMinutes(editingRoutine?.durationMinutes ?? 30)
       setDaysOfWeek(editingRoutine?.daysOfWeek ?? [...DAY_PRESETS.everyDay])
+      setColor(resolveFormColor(editingRoutine?.color))
     }
   }, [isOpen, editingRoutine])
 
@@ -60,6 +64,7 @@ export function RoutineModal({
         startTime,
         durationMinutes,
         daysOfWeek,
+        color,
       })
       onClose()
     } finally {
@@ -135,6 +140,8 @@ export function RoutineModal({
               />
             </div>
           </div>
+
+          <ColorPicker value={color} onChange={setColor} />
 
           <div className="form-field">
             <label>Дни недели</label>

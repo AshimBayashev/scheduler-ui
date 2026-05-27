@@ -19,4 +19,5 @@ export interface EventFormData {
   start: Date
   end: Date
   allDay: boolean
+  color: string
 }

@@ -18,6 +18,7 @@ function toPayload(data: EventFormData) {
     start: data.start.toISOString(),
     end: data.end.toISOString(),
     allDay: data.allDay,
+    color: data.color,
   }
 }
 

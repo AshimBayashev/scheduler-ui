@@ -15,6 +15,7 @@ export interface RoutineFormData {
   startTime: string
   durationMinutes: number
   daysOfWeek: number[]
+  color: string
 }
 
 export const WEEKDAY_LABELS = [

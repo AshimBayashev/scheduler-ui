@@ -19,6 +19,7 @@ function toPayload(data: RoutineFormData) {
     startTime: data.startTime,
     durationMinutes: data.durationMinutes,
     daysOfWeek: data.daysOfWeek,
+    color: data.color,
   }
 }
 

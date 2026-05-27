@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import type { CalendarEvent, EventFormData } from '../../types/event'
+import { ColorPicker } from '../common/ColorPicker'
+import { resolveFormColor } from '../../data/colorPalette'
 import './EventModal.css'
 
 interface EventModalProps {
@@ -39,6 +41,7 @@ export function EventModal({
   const [startStr, setStartStr] = useState(toLocalDatetimeString(defaultStart))
   const [endStr, setEndStr] = useState(toLocalDatetimeString(defaultEnd))
   const [allDay, setAllDay] = useState(initialData?.allDay ?? false)
+  const [color, setColor] = useState<string>(() => resolveFormColor(initialData?.color))
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
@@ -50,6 +53,7 @@ export function EventModal({
       setStartStr(toLocalDatetimeString(start))
       setEndStr(toLocalDatetimeString(end))
       setAllDay(initialData?.allDay ?? editingEvent?.allDay ?? false)
+      setColor(resolveFormColor(initialData?.color ?? editingEvent?.color))
     }
   }, [isOpen, initialData, editingEvent])
 
@@ -66,6 +70,7 @@ export function EventModal({
         start: fromLocalDatetimeString(startStr),
         end: fromLocalDatetimeString(endStr),
         allDay,
+        color,
       })
       onClose()
     } finally {
@@ -115,6 +120,8 @@ export function EventModal({
               rows={3}
             />
           </div>
+
+          <ColorPicker value={color} onChange={setColor} />
 
           <label className="form-checkbox">
             <input

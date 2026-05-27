@@ -158,6 +158,7 @@ export function AppLayout() {
         start: editingEvent.start,
         end: editingEvent.end,
         allDay: editingEvent.allDay ?? false,
+        color: editingEvent.color,
       }
     : draftSlot
       ? { start: draftSlot.start, end: draftSlot.end }

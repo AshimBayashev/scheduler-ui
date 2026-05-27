@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { ApiError, useAuth } from '../context/AuthContext'
-import { ThemeToggle } from '../components/common/ThemeToggle'
+import { ThemeSelect } from '../components/common/ThemeSelect'
 import './AuthPage.css'
 
 type AuthMode = 'login' | 'register'
@@ -35,7 +35,7 @@ export function AuthPage() {
   return (
     <div className="auth-page">
       <div className="auth-page-theme">
-        <ThemeToggle />
+        <ThemeSelect />
       </div>
 
       <div className="auth-card">

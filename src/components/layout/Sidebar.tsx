@@ -1,5 +1,5 @@
 import { MiniCalendar } from '../calendar/MiniCalendar'
-import { ThemeToggle } from '../common/ThemeToggle'
+import { ThemeSelect } from '../common/ThemeSelect'
 import { useAuth } from '../../context/AuthContext'
 import { useSidebarQuote } from '../../hooks/useSidebarQuote'
 import type { Routine } from '../../types/routine'
@@ -58,7 +58,7 @@ export function Sidebar({
           <span>Scheduler</span>
         </div>
         <div className="sidebar-top-actions">
-          <ThemeToggle />
+          <ThemeSelect />
           {onClose && (
             <button
               type="button"

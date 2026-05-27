@@ -35,7 +35,7 @@ function MoonIcon() {
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        d="M21 14.5A7.5 7.5 0 0 1 9.5 3 6.5 6.5 0 1 0 21 14.5z"
+        d="M20.354 15.354A9 9 0 0 1 8.646 3.646 9.003 9.003 0 0 0 12 21a9.003 9.003 0 0 0 8.354-5.646z"
       />
     </svg>
   )

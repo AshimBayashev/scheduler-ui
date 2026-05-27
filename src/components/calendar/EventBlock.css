@@ -1,0 +1,49 @@
+.event-block {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  color: #fff;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 24px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+.event-block:hover {
+  filter: brightness(1.08);
+}
+
+.event-block-title {
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.event-block-time {
+  font-size: 11px;
+  opacity: 0.9;
+}
+
+.event-block--compact {
+  position: static;
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  padding: 2px 6px;
+  margin-bottom: 2px;
+  border-radius: 2px;
+}
+
+.event-block--compact .event-block-title {
+  font-size: 11px;
+}

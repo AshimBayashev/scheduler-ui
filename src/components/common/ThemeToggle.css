@@ -4,30 +4,29 @@
   justify-content: center;
   width: 36px;
   height: 36px;
-  border: 1px solid var(--border-color);
+  padding: 0;
+  border: 1px solid var(--theme-toggle-border);
   border-radius: 4px;
-  background: var(--surface-secondary);
-  color: var(--text-primary);
+  background: var(--theme-toggle-bg);
+  color: var(--theme-toggle-icon);
   cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
   transition: background 0.15s, border-color 0.15s, color 0.15s;
 }
 
-.theme-toggle svg {
+.theme-toggle:hover {
+  background: var(--theme-toggle-bg-hover);
+  color: var(--theme-toggle-icon-hover);
+}
+
+.theme-toggle-icon {
   display: block;
+  flex-shrink: 0;
   color: inherit;
 }
 
-.theme-toggle:hover {
-  background: var(--surface-hover);
-}
-
-[data-theme='dark'] .theme-toggle {
-  background: var(--surface-primary);
-  color: var(--text-primary);
-  border-color: var(--border-color);
-}
-
-[data-theme='dark'] .theme-toggle:hover {
-  background: var(--surface-hover);
-  color: var(--accent-primary);
+.theme-toggle-icon path,
+.theme-toggle-icon circle {
+  stroke: currentColor;
 }

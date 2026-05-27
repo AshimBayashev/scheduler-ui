@@ -41,6 +41,11 @@ body,
   --danger: #d13438;
   --danger-bg: rgba(209, 52, 56, 0.1);
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
+  --theme-toggle-bg: #faf9f8;
+  --theme-toggle-bg-hover: #f3f2f1;
+  --theme-toggle-icon: #242424;
+  --theme-toggle-icon-hover: #6264a7;
+  --theme-toggle-border: #edebe9;
 }
 
 /* Dark theme */
@@ -60,6 +65,12 @@ body,
   --danger: #f1707b;
   --danger-bg: rgba(241, 112, 123, 0.15);
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --theme-toggle-bg: #3d3d3d;
+  --theme-toggle-bg-hover: #4a4a4a;
+  --theme-toggle-icon: #ffffff;
+  --theme-toggle-icon-hover: #b8bcff;
+  --theme-toggle-border: #6b6b6b;
+  color-scheme: dark;
 }
 
 body {

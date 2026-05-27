@@ -1,6 +1,9 @@
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
-import { AppLayout } from './components/layout/AppLayout'
+import { AppShell } from './components/layout/AppShell'
 import { AuthPage } from './pages/AuthPage'
+import { HomePage } from './pages/HomePage'
+import { CalendarPage } from './pages/CalendarPage'
 import './App.css'
 
 function App() {
@@ -14,7 +17,17 @@ function App() {
     return <AuthPage />
   }
 
-  return <AppLayout />
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route element={<AppShell />}>
+          <Route index element={<HomePage />} />
+          <Route path="calendar" element={<CalendarPage />} />
+        </Route>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
+  )
 }
 
 export default App

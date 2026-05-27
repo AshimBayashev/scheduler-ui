@@ -1,22 +1,22 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import type { CalendarEvent, CalendarView, EventFormData } from '../../types/event'
-import type { Routine } from '../../types/routine'
-import { useEvents } from '../../context/EventsContext'
-import { useRoutines } from '../../context/RoutinesContext'
-import { MOBILE_BREAKPOINT, useMediaQuery } from '../../hooks/useMediaQuery'
-import { expandRoutines, getVisibleRange } from '../../utils/expandRoutines'
-import { findRoutineById } from '../../utils/routineUtils'
-import { createDefaultEnd, navigateDate } from '../../utils/dateUtils'
-import { DayView } from '../calendar/DayView'
-import { WeekView } from '../calendar/WeekView'
-import { MonthView } from '../calendar/MonthView'
-import { EventModal } from '../modals/EventModal'
-import { RoutineModal } from '../modals/RoutineModal'
-import { CalendarHeader } from './CalendarHeader'
-import { Sidebar } from './Sidebar'
-import './AppLayout.css'
+import type { CalendarEvent, CalendarView, EventFormData } from '../types/event'
+import type { Routine } from '../types/routine'
+import { useEvents } from '../context/EventsContext'
+import { useRoutines } from '../context/RoutinesContext'
+import { MOBILE_BREAKPOINT, useMediaQuery } from '../hooks/useMediaQuery'
+import { expandRoutines, getVisibleRange } from '../utils/expandRoutines'
+import { findRoutineById } from '../utils/routineUtils'
+import { createDefaultEnd, navigateDate } from '../utils/dateUtils'
+import { DayView } from '../components/calendar/DayView'
+import { WeekView } from '../components/calendar/WeekView'
+import { MonthView } from '../components/calendar/MonthView'
+import { EventModal } from '../components/modals/EventModal'
+import { RoutineModal } from '../components/modals/RoutineModal'
+import { CalendarHeader } from '../components/layout/CalendarHeader'
+import { Sidebar } from '../components/layout/Sidebar'
+import './CalendarPage.css'
 
-export function AppLayout() {
+export function CalendarPage() {
   const isMobile = useMediaQuery(MOBILE_BREAKPOINT)
   const { events, loading: eventsLoading, addEvent, updateEvent, deleteEvent } = useEvents()
   const {
@@ -165,7 +165,7 @@ export function AppLayout() {
       : undefined
 
   return (
-    <div className="app-layout">
+    <div className="calendar-page">
       {isMobile && sidebarOpen && (
         <button
           type="button"

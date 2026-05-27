@@ -1,0 +1,26 @@
+.app-shell {
+  display: flex;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--surface-primary);
+}
+
+.app-shell-main {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .app-shell {
+    flex-direction: column;
+  }
+
+  .app-shell-main {
+    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+  }
+}

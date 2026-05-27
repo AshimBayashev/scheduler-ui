@@ -42,6 +42,7 @@ export function EventModal({
   const [endStr, setEndStr] = useState(toLocalDatetimeString(defaultEnd))
   const [allDay, setAllDay] = useState(initialData?.allDay ?? false)
   const [color, setColor] = useState<string>(() => resolveFormColor(initialData?.color))
+  const [timeError, setTimeError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
@@ -54,6 +55,7 @@ export function EventModal({
       setEndStr(toLocalDatetimeString(end))
       setAllDay(initialData?.allDay ?? editingEvent?.allDay ?? false)
       setColor(resolveFormColor(initialData?.color ?? editingEvent?.color))
+      setTimeError(null)
     }
   }, [isOpen, initialData, editingEvent])
 
@@ -62,13 +64,21 @@ export function EventModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!title.trim() || submitting) return
+
+    const start = fromLocalDatetimeString(startStr)
+    const end = fromLocalDatetimeString(endStr)
+    if (!allDay && end.getTime() <= start.getTime()) {
+      setTimeError('Конец должен быть позже начала')
+      return
+    }
+
     setSubmitting(true)
     try {
       await onSave({
         title: title.trim(),
         description: description.trim(),
-        start: fromLocalDatetimeString(startStr),
-        end: fromLocalDatetimeString(endStr),
+        start,
+        end,
         allDay,
         color,
       })
@@ -140,7 +150,10 @@ export function EventModal({
                   id="event-start"
                   type="datetime-local"
                   value={startStr}
-                  onChange={(e) => setStartStr(e.target.value)}
+                  onChange={(e) => {
+                    setStartStr(e.target.value)
+                    setTimeError(null)
+                  }}
                   required
                 />
               </div>
@@ -150,11 +163,20 @@ export function EventModal({
                   id="event-end"
                   type="datetime-local"
                   value={endStr}
-                  onChange={(e) => setEndStr(e.target.value)}
+                  onChange={(e) => {
+                    setEndStr(e.target.value)
+                    setTimeError(null)
+                  }}
                   required
                 />
               </div>
             </div>
+          )}
+
+          {timeError && (
+            <p className="form-error" role="alert">
+              {timeError}
+            </p>
           )}
 
           {allDay && initialData?.start && (

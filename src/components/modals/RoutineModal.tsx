@@ -24,7 +24,8 @@ export function RoutineModal({
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [startTime, setStartTime] = useState('08:00')
-  const [durationMinutes, setDurationMinutes] = useState(30)
+  const [durationInput, setDurationInput] = useState('30')
+  const [durationError, setDurationError] = useState<string | null>(null)
   const [daysOfWeek, setDaysOfWeek] = useState<number[]>([...DAY_PRESETS.everyDay])
   const [color, setColor] = useState<string>(() => resolveFormColor())
   const [submitting, setSubmitting] = useState(false)
@@ -34,7 +35,8 @@ export function RoutineModal({
       setTitle(editingRoutine?.title ?? '')
       setDescription(editingRoutine?.description ?? '')
       setStartTime(editingRoutine?.startTime ?? '08:00')
-      setDurationMinutes(editingRoutine?.durationMinutes ?? 30)
+      setDurationInput(String(editingRoutine?.durationMinutes ?? 30))
+      setDurationError(null)
       setDaysOfWeek(editingRoutine?.daysOfWeek ?? [...DAY_PRESETS.everyDay])
       setColor(resolveFormColor(editingRoutine?.color))
     }
@@ -52,9 +54,39 @@ export function RoutineModal({
     setDaysOfWeek([...days])
   }
 
+  const handleDurationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value
+    if (raw === '' || /^\d+$/.test(raw)) {
+      setDurationInput(raw)
+      setDurationError(null)
+    }
+  }
+
+  const handleDurationBlur = () => {
+    if (durationInput === '') {
+      setDurationInput('0')
+    }
+  }
+
+  const validateDuration = (): number | null => {
+    const duration = durationInput === '' ? 0 : Number.parseInt(durationInput, 10)
+    if (!Number.isFinite(duration) || duration <= 0) {
+      setDurationError('Укажите длительность больше 0 минут')
+      return null
+    }
+    if (duration < 5 || duration > 720) {
+      setDurationError('Длительность — от 5 до 720 минут')
+      return null
+    }
+    return duration
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!title.trim() || daysOfWeek.length === 0 || submitting) return
+
+    const durationMinutes = validateDuration()
+    if (durationMinutes === null) return
 
     setSubmitting(true)
     try {
@@ -130,14 +162,20 @@ export function RoutineModal({
               <label htmlFor="routine-duration">Длительность (мин)</label>
               <input
                 id="routine-duration"
-                type="number"
-                min={5}
-                max={720}
-                step={5}
-                value={durationMinutes}
-                onChange={(e) => setDurationMinutes(Number(e.target.value))}
-                required
+                type="text"
+                inputMode="numeric"
+                autoComplete="off"
+                value={durationInput}
+                onChange={handleDurationChange}
+                onBlur={handleDurationBlur}
+                aria-invalid={durationError ? true : undefined}
+                aria-describedby={durationError ? 'routine-duration-error' : undefined}
               />
+              {durationError && (
+                <p id="routine-duration-error" className="form-error" role="alert">
+                  {durationError}
+                </p>
+              )}
             </div>
           </div>
 

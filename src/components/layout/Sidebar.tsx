@@ -1,6 +1,7 @@
 import { MiniCalendar } from '../calendar/MiniCalendar'
 import { ThemeToggle } from '../common/ThemeToggle'
 import { useAuth } from '../../context/AuthContext'
+import { useSidebarQuote } from '../../hooks/useSidebarQuote'
 import type { Routine } from '../../types/routine'
 import { formatRoutineDays } from '../../utils/routineUtils'
 import './Sidebar.css'
@@ -29,6 +30,7 @@ export function Sidebar({
   eventDates,
 }: SidebarProps) {
   const { user, logout } = useAuth()
+  const sidebarQuote = useSidebarQuote(user?.id)
 
   const handleDateSelect = (date: Date) => {
     onDateSelect(date)
@@ -120,7 +122,7 @@ export function Sidebar({
       </div>
 
       <div className="sidebar-hint">
-        <p>Рутины — каркас дня. Дела — разовые записи поверх.</p>
+        <p>{sidebarQuote?.text ?? 'Записывай — потом не вспомнишь.'}</p>
       </div>
 
       <div className="sidebar-user">

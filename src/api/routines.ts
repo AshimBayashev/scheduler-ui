@@ -10,6 +10,7 @@ export interface ApiRoutine {
   daysOfWeek: number[]
   color: string
   active: boolean
+  reminderMinutesBefore: number | null
 }
 
 function toPayload(data: RoutineFormData) {
@@ -20,6 +21,7 @@ function toPayload(data: RoutineFormData) {
     durationMinutes: data.durationMinutes,
     daysOfWeek: data.daysOfWeek,
     color: data.color,
+    reminderMinutesBefore: data.reminderMinutesBefore,
   }
 }
 
@@ -57,5 +59,6 @@ export function mapApiRoutine(routine: ApiRoutine): Routine {
     daysOfWeek: routine.daysOfWeek,
     color: routine.color,
     active: routine.active,
+    reminderMinutesBefore: routine.reminderMinutesBefore,
   }
 }

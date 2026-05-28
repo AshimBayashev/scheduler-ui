@@ -9,6 +9,7 @@ export interface ApiEvent {
   end: string
   allDay: boolean
   color: string
+  reminderMinutesBefore: number | null
 }
 
 function toPayload(data: EventFormData) {
@@ -19,6 +20,7 @@ function toPayload(data: EventFormData) {
     end: data.end.toISOString(),
     allDay: data.allDay,
     color: data.color,
+    reminderMinutesBefore: data.reminderMinutesBefore,
   }
 }
 
@@ -59,5 +61,6 @@ export function mapApiEvent(event: ApiEvent) {
     end: new Date(event.end),
     allDay: event.allDay,
     color: event.color,
+    reminderMinutesBefore: event.reminderMinutesBefore,
   }
 }

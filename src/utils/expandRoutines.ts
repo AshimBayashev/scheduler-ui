@@ -31,6 +31,7 @@ export function expandRoutines(
         start,
         end,
         color: routine.color,
+        reminderMinutesBefore: routine.reminderMinutesBefore,
         isRoutine: true,
       })
     }

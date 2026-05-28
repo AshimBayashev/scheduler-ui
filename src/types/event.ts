@@ -8,6 +8,7 @@ export interface CalendarEvent {
   end: Date
   allDay?: boolean
   color?: string
+  reminderMinutesBefore?: number | null
   /** Развёрнутый слот рутины (не разовое дело) */
   isRoutine?: boolean
   routineId?: string
@@ -20,4 +21,5 @@ export interface EventFormData {
   end: Date
   allDay: boolean
   color: string
+  reminderMinutesBefore: number | null
 }

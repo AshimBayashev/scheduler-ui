@@ -7,6 +7,7 @@ export interface Routine {
   daysOfWeek: number[]
   color: string
   active: boolean
+  reminderMinutesBefore: number | null
 }
 
 export interface RoutineFormData {
@@ -16,6 +17,7 @@ export interface RoutineFormData {
   durationMinutes: number
   daysOfWeek: number[]
   color: string
+  reminderMinutesBefore: number | null
 }
 
 export const WEEKDAY_LABELS = [

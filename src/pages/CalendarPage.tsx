@@ -159,6 +159,7 @@ export function CalendarPage() {
         end: editingEvent.end,
         allDay: editingEvent.allDay ?? false,
         color: editingEvent.color,
+        reminderMinutesBefore: editingEvent.reminderMinutesBefore ?? null,
       }
     : draftSlot
       ? { start: draftSlot.start, end: draftSlot.end }

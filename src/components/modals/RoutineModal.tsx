@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react'
 import type { Routine, RoutineFormData } from '../../types/routine'
 import { DAY_PRESETS, WEEKDAY_LABELS } from '../../types/routine'
 import { ColorPicker } from '../common/ColorPicker'
+import { ReminderSelect } from '../common/ReminderSelect'
 import { resolveFormColor } from '../../data/colorPalette'
+import { DEFAULT_REMINDER_MINUTES, normalizeReminderMinutes, type ReminderMinutes } from '../../data/reminders'
 import '../modals/EventModal.css'
 import './RoutineModal.css'
 
@@ -28,6 +30,9 @@ export function RoutineModal({
   const [durationError, setDurationError] = useState<string | null>(null)
   const [daysOfWeek, setDaysOfWeek] = useState<number[]>([...DAY_PRESETS.everyDay])
   const [color, setColor] = useState<string>(() => resolveFormColor())
+  const [reminderMinutesBefore, setReminderMinutesBefore] = useState<ReminderMinutes>(
+    DEFAULT_REMINDER_MINUTES,
+  )
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
@@ -39,6 +44,9 @@ export function RoutineModal({
       setDurationError(null)
       setDaysOfWeek(editingRoutine?.daysOfWeek ?? [...DAY_PRESETS.everyDay])
       setColor(resolveFormColor(editingRoutine?.color))
+      setReminderMinutesBefore(
+        normalizeReminderMinutes(editingRoutine?.reminderMinutesBefore),
+      )
     }
   }, [isOpen, editingRoutine])
 
@@ -97,6 +105,7 @@ export function RoutineModal({
         durationMinutes,
         daysOfWeek,
         color,
+        reminderMinutesBefore,
       })
       onClose()
     } finally {
@@ -180,6 +189,11 @@ export function RoutineModal({
           </div>
 
           <ColorPicker value={color} onChange={setColor} />
+
+          <ReminderSelect
+            value={reminderMinutesBefore}
+            onChange={setReminderMinutesBefore}
+          />
 
           <div className="form-field">
             <label>Дни недели</label>

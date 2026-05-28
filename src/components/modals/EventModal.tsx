@@ -3,7 +3,9 @@ import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import type { CalendarEvent, EventFormData } from '../../types/event'
 import { ColorPicker } from '../common/ColorPicker'
+import { ReminderSelect } from '../common/ReminderSelect'
 import { resolveFormColor } from '../../data/colorPalette'
+import { normalizeReminderMinutes, type ReminderMinutes } from '../../data/reminders'
 import './EventModal.css'
 
 interface EventModalProps {
@@ -42,6 +44,9 @@ export function EventModal({
   const [endStr, setEndStr] = useState(toLocalDatetimeString(defaultEnd))
   const [allDay, setAllDay] = useState(initialData?.allDay ?? false)
   const [color, setColor] = useState<string>(() => resolveFormColor(initialData?.color))
+  const [reminderMinutesBefore, setReminderMinutesBefore] = useState<ReminderMinutes>(() =>
+    normalizeReminderMinutes(initialData?.reminderMinutesBefore),
+  )
   const [timeError, setTimeError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
@@ -55,6 +60,11 @@ export function EventModal({
       setEndStr(toLocalDatetimeString(end))
       setAllDay(initialData?.allDay ?? editingEvent?.allDay ?? false)
       setColor(resolveFormColor(initialData?.color ?? editingEvent?.color))
+      setReminderMinutesBefore(
+        normalizeReminderMinutes(
+          initialData?.reminderMinutesBefore ?? editingEvent?.reminderMinutesBefore,
+        ),
+      )
       setTimeError(null)
     }
   }, [isOpen, initialData, editingEvent])
@@ -81,6 +91,7 @@ export function EventModal({
         end,
         allDay,
         color,
+        reminderMinutesBefore,
       })
       onClose()
     } finally {
@@ -132,6 +143,11 @@ export function EventModal({
           </div>
 
           <ColorPicker value={color} onChange={setColor} />
+
+          <ReminderSelect
+            value={reminderMinutesBefore}
+            onChange={setReminderMinutesBefore}
+          />
 
           <label className="form-checkbox">
             <input

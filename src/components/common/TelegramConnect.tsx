@@ -13,13 +13,15 @@ export function TelegramConnect() {
   const [link, setLink] = useState<TelegramLinkResponse | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [loadFailed, setLoadFailed] = useState(false)
 
   const refresh = useCallback(async () => {
     try {
       const data = await fetchTelegramStatus()
       setStatus(data)
+      setLoadFailed(false)
     } catch {
-      setStatus({ enabled: false, linked: false, botUsername: null })
+      setLoadFailed(true)
     }
   }, [])
 
@@ -29,7 +31,34 @@ export function TelegramConnect() {
     return () => window.clearInterval(id)
   }, [refresh])
 
-  if (!status?.enabled) return null
+  if (status === null && !loadFailed) return null
+
+  if (loadFailed) {
+    return (
+      <div className="telegram-connect telegram-connect--warn" role="region" aria-label="Telegram">
+        <div className="telegram-connect-text">
+          <strong>Telegram</strong>
+          <span>Не удалось проверить статус. Обнови страницу.</span>
+        </div>
+      </div>
+    )
+  }
+
+  if (status && !status.enabled) {
+    return (
+      <div className="telegram-connect telegram-connect--warn" role="region" aria-label="Telegram">
+        <div className="telegram-connect-text">
+          <strong>Telegram</strong>
+          <span>
+            Бот не настроен на сервере. Добавь <code>TELEGRAM_BOT_TOKEN</code> в{' '}
+            <code>.env</code> на VPS и запусти <code>./deploy.sh</code>.
+          </span>
+        </div>
+      </div>
+    )
+  }
+
+  if (!status) return null
 
   const handleConnect = async () => {
     setLoading(true)

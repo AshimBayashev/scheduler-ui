@@ -80,3 +80,15 @@
     margin: 0 12px 10px;
   }
 }
+
+.telegram-connect--warn {
+  border-color: color-mix(in srgb, var(--warning, #c9a227) 40%, var(--border-color));
+  background: color-mix(in srgb, var(--warning, #c9a227) 10%, var(--surface-secondary));
+}
+
+.telegram-connect-text code {
+  font-size: 12px;
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: var(--surface-hover);
+}

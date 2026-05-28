@@ -8,7 +8,9 @@ export function AppShell() {
     <div className="app-shell">
       <NavRail />
       <div className="app-shell-main">
-        <TelegramConnect />
+        <div className="app-shell-notices">
+          <TelegramConnect />
+        </div>
         <Outlet />
       </div>
     </div>

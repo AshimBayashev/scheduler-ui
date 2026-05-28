@@ -68,7 +68,7 @@ export function TelegramConnect() {
         {status.linked ? (
           <span>Подключён — напоминания приходят в бота</span>
         ) : (
-          <span>Надёжнее push: напоминания прямо в Telegram</span>
+          <span>Напоминания о делах и рутинах прямо в Telegram</span>
         )}
       </div>
 

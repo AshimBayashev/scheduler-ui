@@ -218,27 +218,105 @@
     margin-bottom: 20px;
   }
 
-  .home-hero-scene {
-    height: min(440px, 65vh);
+  .home-hero-scene--mobile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: auto;
+    gap: 28px;
+    width: 100%;
   }
 
-  .home-hero-core {
-    left: 50%;
+  .home-hero-scene--mobile .home-hero-core {
+    position: relative;
+    left: auto;
+    top: auto;
+    transform: none;
   }
 
-  .home-orbit-ring {
-    transform: translate(-50%, -50%);
+  .home-plans-list {
+    width: 100%;
+    max-width: 420px;
   }
 
-  .home-orbit-empty {
-    left: 50%;
-    top: 72%;
-    transform: translateX(-50%);
+  .home-plans-list-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 12px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+
+  .home-plans-list-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: var(--accent-primary);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .home-plans-list-items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .home-plans-list-empty {
+    margin: 0 0 12px;
+    font-size: 14px;
+    color: var(--text-muted);
     text-align: center;
   }
 
-  .home-plan-chip {
-    max-width: 120px;
-    padding: 6px 10px;
+  .home-plans-list-empty a {
+    color: var(--accent-primary);
+    font-weight: 600;
+  }
+
+  .home-plans-list-more {
+    display: block;
+    margin-top: 12px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent-primary);
+    text-decoration: none;
+  }
+
+  .home-plan-chip--list {
+    position: relative;
+    transform: none;
+    max-width: none;
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+  }
+
+  .home-plan-chip--list:hover {
+    transform: none;
+  }
+
+  .home-plan-chip--list .home-plan-chip-time {
+    flex-shrink: 0;
+    min-width: 52px;
+    font-size: 13px;
+  }
+
+  .home-plan-chip--list .home-plan-chip-title {
+    white-space: normal;
+    flex: 1;
   }
 }

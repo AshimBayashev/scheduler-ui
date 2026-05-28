@@ -7,6 +7,7 @@ import { useEvents } from '../context/EventsContext'
 import { useRoutines } from '../context/RoutinesContext'
 import { ThemeSelect } from '../components/common/ThemeSelect'
 import { useClock } from '../hooks/useClock'
+import { MOBILE_BREAKPOINT, useMediaQuery } from '../hooks/useMediaQuery'
 import { useWeather } from '../hooks/useWeather'
 import { getDisplayName, getGreeting, isLikelyFeminineName } from '../utils/greeting'
 import { getTodayPlans } from '../utils/todayPlans'
@@ -35,6 +36,7 @@ function orbitPosition(index: number, total: number) {
 }
 
 export function HomePage() {
+  const isMobile = useMediaQuery(MOBILE_BREAKPOINT)
   const { user } = useAuth()
   const { events, loading: eventsLoading } = useEvents()
   const { routines, loading: routinesLoading } = useRoutines()
@@ -65,14 +67,16 @@ export function HomePage() {
       </header>
 
       <section className="home-hero" aria-label="Сегодня">
-        <div className="home-hero-scene">
-          <svg
-            className="home-orbit-ring"
-            viewBox="0 0 500 500"
-            aria-hidden="true"
-          >
-            <circle cx="200" cy="250" r={ORBIT_RADIUS} className="home-orbit-ring-stroke" />
-          </svg>
+        <div className={`home-hero-scene${isMobile ? ' home-hero-scene--mobile' : ''}`}>
+          {!isMobile && (
+            <svg
+              className="home-orbit-ring"
+              viewBox="0 0 500 500"
+              aria-hidden="true"
+            >
+              <circle cx="200" cy="250" r={ORBIT_RADIUS} className="home-orbit-ring-stroke" />
+            </svg>
+          )}
 
           <div className="home-hero-core">
             <div className="home-clock-circle">
@@ -90,40 +94,95 @@ export function HomePage() {
             </div>
           </div>
 
-          <div className="home-orbit-layer">
-            {loading && visiblePlans.length === 0 && (
-              <p className="home-orbit-empty home-orbit-empty--loading">Загрузка планов…</p>
-            )}
-            {!loading && todayPlans.length === 0 && (
-              <p className="home-orbit-empty">
-                Сегодня свободно —{' '}
-                <Link to="/calendar">добавить дело</Link>
-              </p>
-            )}
-            {visiblePlans.map((plan, index) => (
-              <HomePlanChip
-                key={plan.id}
-                plan={plan}
-                style={orbitPosition(index, visiblePlans.length)}
-              />
-            ))}
-            {hiddenCount > 0 && (
-              <Link
-                to="/calendar"
-                className="home-orbit-more"
-                style={orbitPosition(visiblePlans.length, visiblePlans.length + 1)}
-              >
-                +{hiddenCount} ещё
-              </Link>
-            )}
-          </div>
+          {isMobile ? (
+            <HomePlansList
+              loading={loading}
+              plans={visiblePlans}
+              totalCount={todayPlans.length}
+              hiddenCount={hiddenCount}
+            />
+          ) : (
+            <div className="home-orbit-layer">
+              {loading && visiblePlans.length === 0 && (
+                <p className="home-orbit-empty home-orbit-empty--loading">Загрузка планов…</p>
+              )}
+              {!loading && todayPlans.length === 0 && (
+                <p className="home-orbit-empty">
+                  Сегодня свободно —{' '}
+                  <Link to="/calendar">добавить дело</Link>
+                </p>
+              )}
+              {visiblePlans.map((plan, index) => (
+                <HomePlanChip
+                  key={plan.id}
+                  plan={plan}
+                  style={orbitPosition(index, visiblePlans.length)}
+                />
+              ))}
+              {hiddenCount > 0 && (
+                <Link
+                  to="/calendar"
+                  className="home-orbit-more"
+                  style={orbitPosition(visiblePlans.length, visiblePlans.length + 1)}
+                >
+                  +{hiddenCount} ещё
+                </Link>
+              )}
+            </div>
+          )}
         </div>
 
-        <p className="home-hero-caption">
-          Планы на сегодня · {todayPlans.length}{' '}
-          {todayPlans.length === 1 ? 'запись' : todayPlans.length < 5 ? 'записи' : 'записей'}
-        </p>
+        {!isMobile && (
+          <p className="home-hero-caption">
+            Планы на сегодня · {todayPlans.length}{' '}
+            {todayPlans.length === 1 ? 'запись' : todayPlans.length < 5 ? 'записи' : 'записей'}
+          </p>
+        )}
       </section>
+    </div>
+  )
+}
+
+function HomePlansList({
+  loading,
+  plans,
+  totalCount,
+  hiddenCount,
+}: {
+  loading: boolean
+  plans: CalendarEvent[]
+  totalCount: number
+  hiddenCount: number
+}) {
+  return (
+    <div className="home-plans-list">
+      <h2 className="home-plans-list-title">
+        Планы на сегодня
+        {totalCount > 0 && <span className="home-plans-list-count">{totalCount}</span>}
+      </h2>
+
+      {loading && plans.length === 0 && (
+        <p className="home-plans-list-empty">Загрузка планов…</p>
+      )}
+      {!loading && totalCount === 0 && (
+        <p className="home-plans-list-empty">
+          Сегодня свободно — <Link to="/calendar">добавить дело</Link>
+        </p>
+      )}
+
+      <ul className="home-plans-list-items">
+        {plans.map((plan) => (
+          <li key={plan.id}>
+            <HomePlanChip plan={plan} layout="list" />
+          </li>
+        ))}
+      </ul>
+
+      {hiddenCount > 0 && (
+        <Link to="/calendar" className="home-plans-list-more">
+          Ещё {hiddenCount} в календаре
+        </Link>
+      )}
     </div>
   )
 }
@@ -131,16 +190,22 @@ export function HomePage() {
 function HomePlanChip({
   plan,
   style,
+  layout = 'orbit',
 }: {
   plan: CalendarEvent
-  style: React.CSSProperties
+  style?: React.CSSProperties
+  layout?: 'orbit' | 'list'
 }) {
   const color = plan.color ?? 'var(--accent-primary)'
 
   return (
     <Link
       to="/calendar"
-      className={['home-plan-chip', plan.isRoutine && 'home-plan-chip--routine']
+      className={[
+        'home-plan-chip',
+        layout === 'list' && 'home-plan-chip--list',
+        plan.isRoutine && 'home-plan-chip--routine',
+      ]
         .filter(Boolean)
         .join(' ')}
       style={{ ...style, '--plan-color': color } as React.CSSProperties}

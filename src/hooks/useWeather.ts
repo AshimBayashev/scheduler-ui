@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 
 interface WeatherState {
   temperature: number | null
+  weatherCode: number | null
   loading: boolean
   error: string | null
 }
@@ -9,6 +10,7 @@ interface WeatherState {
 export function useWeather() {
   const [state, setState] = useState<WeatherState>({
     temperature: null,
+    weatherCode: null,
     loading: true,
     error: null,
   })
@@ -21,22 +23,29 @@ export function useWeather() {
         const url = new URL('https://api.open-meteo.com/v1/forecast')
         url.searchParams.set('latitude', String(latitude))
         url.searchParams.set('longitude', String(longitude))
-        url.searchParams.set('current', 'temperature_2m')
+        url.searchParams.set('current', 'temperature_2m,weather_code')
         url.searchParams.set('timezone', 'auto')
 
         const res = await fetch(url.toString())
         if (!res.ok) throw new Error('Не удалось получить погоду')
         const data = await res.json()
         const temp = data?.current?.temperature_2m
+        const code = data?.current?.weather_code
         if (typeof temp !== 'number') throw new Error('Нет данных о температуре')
 
         if (!cancelled) {
-          setState({ temperature: Math.round(temp), loading: false, error: null })
+          setState({
+            temperature: Math.round(temp),
+            weatherCode: typeof code === 'number' ? code : null,
+            loading: false,
+            error: null,
+          })
         }
       } catch {
         if (!cancelled) {
           setState({
             temperature: null,
+            weatherCode: null,
             loading: false,
             error: 'Погода недоступна',
           })
@@ -45,7 +54,7 @@ export function useWeather() {
     }
 
     if (!navigator.geolocation) {
-      setState({ temperature: null, loading: false, error: 'Геолокация недоступна' })
+      setState({ temperature: null, weatherCode: null, loading: false, error: 'Геолокация недоступна' })
       return
     }
 
@@ -53,7 +62,7 @@ export function useWeather() {
       (pos) => load(pos.coords.latitude, pos.coords.longitude),
       () => {
         if (!cancelled) {
-          setState({ temperature: null, loading: false, error: 'Нет доступа к геолокации' })
+          setState({ temperature: null, weatherCode: null, loading: false, error: 'Нет доступа к геолокации' })
         }
       },
       { timeout: 12000, maximumAge: 600_000 },

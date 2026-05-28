@@ -6,9 +6,11 @@ import { useAuth } from '../context/AuthContext'
 import { useEvents } from '../context/EventsContext'
 import { useRoutines } from '../context/RoutinesContext'
 import { ThemeSelect } from '../components/common/ThemeSelect'
+import { WeatherIcon } from '../components/common/WeatherIcon'
 import { useClock } from '../hooks/useClock'
 import { MOBILE_BREAKPOINT, useMediaQuery } from '../hooks/useMediaQuery'
 import { useWeather } from '../hooks/useWeather'
+import { WEATHER_LABELS, weatherCodeToKind } from '../data/weatherCodes'
 import { getDisplayName, getGreeting, isLikelyFeminineName } from '../utils/greeting'
 import { getTodayPlans } from '../utils/todayPlans'
 import type { CalendarEvent } from '../types/event'
@@ -41,7 +43,7 @@ export function HomePage() {
   const { events, loading: eventsLoading } = useEvents()
   const { routines, loading: routinesLoading } = useRoutines()
   const now = useClock()
-  const { temperature, loading: weatherLoading, error: weatherError } = useWeather()
+  const { temperature, weatherCode, loading: weatherLoading, error: weatherError } = useWeather()
 
   const displayName = user ? getDisplayName(user.name, user.email) : ''
   const feminine = isLikelyFeminineName(displayName)
@@ -88,7 +90,18 @@ export function HomePage() {
               </time>
               <p className="home-clock-weather">
                 {weatherLoading && 'Загрузка погоды…'}
-                {!weatherLoading && temperature !== null && `${temperature}°C`}
+                {!weatherLoading && temperature !== null && (
+                  <>
+                    <WeatherIcon
+                      code={weatherCode}
+                      className="home-clock-weather-icon"
+                    />
+                    <span>{temperature}°C</span>
+                    <span className="visually-hidden">
+                      {WEATHER_LABELS[weatherCodeToKind(weatherCode)]}
+                    </span>
+                  </>
+                )}
                 {!weatherLoading && temperature === null && (weatherError ?? '—')}
               </p>
             </div>

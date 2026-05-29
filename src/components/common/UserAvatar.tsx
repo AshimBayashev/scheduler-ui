@@ -5,7 +5,7 @@ interface UserAvatarProps {
   name?: string | null
   email: string
   avatarUrl?: string | null
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'xs' | 'sm' | 'md' | 'lg'
   className?: string
 }
 

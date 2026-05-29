@@ -1,4 +1,5 @@
 import type { CalendarEvent } from '../../types/event'
+import type { FamilyMemberVisual } from '../../utils/familyMemberVisuals'
 import { TimeGrid } from './TimeGrid'
 
 interface DayViewProps {
@@ -6,7 +7,7 @@ interface DayViewProps {
   events: CalendarEvent[]
   onSlotClick?: (date: Date) => void
   onEventClick: (event: CalendarEvent) => void
-  showOwnerLabels?: boolean
+  familyMemberVisuals?: Map<string, FamilyMemberVisual>
 }
 
 export function DayView({
@@ -14,7 +15,7 @@ export function DayView({
   events,
   onSlotClick,
   onEventClick,
-  showOwnerLabels,
+  familyMemberVisuals,
 }: DayViewProps) {
   return (
     <TimeGrid
@@ -22,7 +23,7 @@ export function DayView({
       events={events}
       onSlotClick={onSlotClick}
       onEventClick={onEventClick}
-      showOwnerLabels={showOwnerLabels}
+      familyMemberVisuals={familyMemberVisuals}
     />
   )
 }

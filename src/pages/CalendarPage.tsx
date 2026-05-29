@@ -8,6 +8,7 @@ import { useRoutines } from '../context/RoutinesContext'
 import { FamilyMemberSwitcher } from '../components/common/FamilyMemberSwitcher'
 import { MOBILE_BREAKPOINT, useMediaQuery } from '../hooks/useMediaQuery'
 import { useMemberCalendarData } from '../hooks/useMemberCalendarData'
+import { buildFamilyMemberVisuals } from '../utils/familyMemberVisuals'
 import { expandRoutines, getVisibleRange } from '../utils/expandRoutines'
 import { findRoutineById } from '../utils/routineUtils'
 import { createDefaultEnd, navigateDate } from '../utils/dateUtils'
@@ -44,7 +45,10 @@ export function CalendarPage() {
   const [draftSlot, setDraftSlot] = useState<{ start: Date; end: Date } | null>(null)
 
   const isReadOnly = memberScope !== 'self'
-  const showOwnerLabels = memberScope === 'family'
+  const familyMemberVisuals = useMemo(() => {
+    if (memberScope !== 'family' || !overview?.members.length) return undefined
+    return buildFamilyMemberVisuals(overview.members)
+  }, [memberScope, overview?.members])
 
   const visibleRange = useMemo(
     () => getVisibleRange(currentDate, view),
@@ -282,7 +286,7 @@ export function CalendarPage() {
                   events={calendarItems}
                   onSlotClick={isReadOnly ? undefined : openNewEventModal}
                   onEventClick={openEditEventModal}
-                  showOwnerLabels={showOwnerLabels}
+                  familyMemberVisuals={familyMemberVisuals}
                 />
               )}
               {view === 'week' && (
@@ -291,7 +295,7 @@ export function CalendarPage() {
                   events={calendarItems}
                   onSlotClick={isReadOnly ? undefined : openNewEventModal}
                   onEventClick={openEditEventModal}
-                  showOwnerLabels={showOwnerLabels}
+                  familyMemberVisuals={familyMemberVisuals}
                 />
               )}
               {view === 'month' && (
@@ -300,7 +304,7 @@ export function CalendarPage() {
                   events={calendarItems}
                   onDayClick={handleDayClick}
                   onEventClick={openEditEventModal}
-                  showOwnerLabels={showOwnerLabels}
+                  familyMemberVisuals={familyMemberVisuals}
                 />
               )}
             </>

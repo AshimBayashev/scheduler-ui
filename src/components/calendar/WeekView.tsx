@@ -7,6 +7,7 @@ import {
   writeWeekMobileZoom,
   type WeekMobileZoom,
 } from '../../utils/weekMobileZoom'
+import type { FamilyMemberVisual } from '../../utils/familyMemberVisuals'
 import { TimeGrid } from './TimeGrid'
 import { WeekMobileZoomBar } from './WeekMobileZoomBar'
 import './WeekView.css'
@@ -16,7 +17,7 @@ interface WeekViewProps {
   events: CalendarEvent[]
   onSlotClick?: (date: Date) => void
   onEventClick: (event: CalendarEvent) => void
-  showOwnerLabels?: boolean
+  familyMemberVisuals?: Map<string, FamilyMemberVisual>
 }
 
 export function WeekView({
@@ -24,7 +25,7 @@ export function WeekView({
   events,
   onSlotClick,
   onEventClick,
-  showOwnerLabels,
+  familyMemberVisuals,
 }: WeekViewProps) {
   const isMobile = useMediaQuery(MOBILE_BREAKPOINT)
   const [mobileZoom, setMobileZoom] = useState<WeekMobileZoom>(readWeekMobileZoom)
@@ -44,7 +45,7 @@ export function WeekView({
         events={events}
         onSlotClick={onSlotClick}
         onEventClick={onEventClick}
-        showOwnerLabels={showOwnerLabels}
+        familyMemberVisuals={familyMemberVisuals}
         mobileWeekZoom={isMobile ? mobileZoom : undefined}
       />
     </div>

@@ -6,6 +6,8 @@ import { useEvents } from '../context/EventsContext'
 import { useFamily } from '../context/FamilyContext'
 import { useRoutines } from '../context/RoutinesContext'
 import { FamilyMemberSwitcher } from '../components/common/FamilyMemberSwitcher'
+import { FamilyMemberLegend } from '../components/calendar/FamilyMemberLegend'
+import { buildMemberColorMap } from '../utils/familyMemberColors'
 import { MOBILE_BREAKPOINT, useMediaQuery } from '../hooks/useMediaQuery'
 import { useMemberCalendarData } from '../hooks/useMemberCalendarData'
 import { expandRoutines, getVisibleRange } from '../utils/expandRoutines'
@@ -44,7 +46,13 @@ export function CalendarPage() {
   const [draftSlot, setDraftSlot] = useState<{ start: Date; end: Date } | null>(null)
 
   const isReadOnly = memberScope !== 'self'
-  const showOwnerLabels = memberScope === 'family'
+  const memberColors = useMemo(
+    () =>
+      memberScope === 'family' && overview?.members.length
+        ? buildMemberColorMap(overview.members)
+        : undefined,
+    [memberScope, overview?.members],
+  )
 
   const visibleRange = useMemo(
     () => getVisibleRange(currentDate, view),
@@ -272,6 +280,12 @@ export function CalendarPage() {
         />
 
         <div className="calendar-content">
+          {memberColors && overview?.members && (
+            <FamilyMemberLegend
+              members={overview.members}
+              memberColors={memberColors}
+            />
+          )}
           {loading && calendarItems.length === 0 ? (
             <div className="calendar-loading">Загрузка...</div>
           ) : (
@@ -282,7 +296,7 @@ export function CalendarPage() {
                   events={calendarItems}
                   onSlotClick={isReadOnly ? undefined : openNewEventModal}
                   onEventClick={openEditEventModal}
-                  showOwnerLabels={showOwnerLabels}
+                  memberColors={memberColors}
                 />
               )}
               {view === 'week' && (
@@ -291,7 +305,7 @@ export function CalendarPage() {
                   events={calendarItems}
                   onSlotClick={isReadOnly ? undefined : openNewEventModal}
                   onEventClick={openEditEventModal}
-                  showOwnerLabels={showOwnerLabels}
+                  memberColors={memberColors}
                 />
               )}
               {view === 'month' && (
@@ -300,7 +314,7 @@ export function CalendarPage() {
                   events={calendarItems}
                   onDayClick={handleDayClick}
                   onEventClick={openEditEventModal}
-                  showOwnerLabels={showOwnerLabels}
+                  memberColors={memberColors}
                 />
               )}
             </>

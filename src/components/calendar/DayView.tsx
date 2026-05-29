@@ -6,7 +6,7 @@ interface DayViewProps {
   events: CalendarEvent[]
   onSlotClick?: (date: Date) => void
   onEventClick: (event: CalendarEvent) => void
-  showOwnerLabels?: boolean
+  memberColors?: Record<string, string>
 }
 
 export function DayView({
@@ -14,7 +14,7 @@ export function DayView({
   events,
   onSlotClick,
   onEventClick,
-  showOwnerLabels,
+  memberColors,
 }: DayViewProps) {
   return (
     <TimeGrid
@@ -22,7 +22,7 @@ export function DayView({
       events={events}
       onSlotClick={onSlotClick}
       onEventClick={onEventClick}
-      showOwnerLabels={showOwnerLabels}
+      memberColors={memberColors}
     />
   )
 }

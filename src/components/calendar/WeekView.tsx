@@ -16,7 +16,7 @@ interface WeekViewProps {
   events: CalendarEvent[]
   onSlotClick?: (date: Date) => void
   onEventClick: (event: CalendarEvent) => void
-  showOwnerLabels?: boolean
+  memberColors?: Record<string, string>
 }
 
 export function WeekView({
@@ -24,7 +24,7 @@ export function WeekView({
   events,
   onSlotClick,
   onEventClick,
-  showOwnerLabels,
+  memberColors,
 }: WeekViewProps) {
   const isMobile = useMediaQuery(MOBILE_BREAKPOINT)
   const [mobileZoom, setMobileZoom] = useState<WeekMobileZoom>(readWeekMobileZoom)
@@ -44,7 +44,7 @@ export function WeekView({
         events={events}
         onSlotClick={onSlotClick}
         onEventClick={onEventClick}
-        showOwnerLabels={showOwnerLabels}
+        memberColors={memberColors}
         mobileWeekZoom={isMobile ? mobileZoom : undefined}
       />
     </div>

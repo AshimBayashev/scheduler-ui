@@ -9,7 +9,7 @@ interface MonthViewProps {
   events: CalendarEvent[]
   onDayClick: (date: Date) => void
   onEventClick: (event: CalendarEvent) => void
-  showOwnerLabels?: boolean
+  memberColors?: Record<string, string>
 }
 
 const WEEKDAYS = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
@@ -19,7 +19,7 @@ export function MonthView({
   events,
   onDayClick,
   onEventClick,
-  showOwnerLabels,
+  memberColors,
 }: MonthViewProps) {
   const days = getMonthDays(date)
 
@@ -64,7 +64,7 @@ export function MonthView({
                     event={event}
                     onClick={onEventClick}
                     compact
-                    showOwnerLabel={showOwnerLabels}
+                    memberColors={memberColors}
                   />
                 ))}
                 {dayEvents.length > 3 && (

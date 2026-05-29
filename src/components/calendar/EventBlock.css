@@ -47,15 +47,37 @@
   text-overflow: ellipsis;
 }
 
-.event-block-owner {
-  font-size: 10px;
-  font-weight: 700;
-  opacity: 0.85;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
+.event-block--member-stripe {
+  padding-left: 10px;
+}
+
+.event-block--member-stripe::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--member-stripe-color);
+  border-radius: 4px 0 0 4px;
+}
+
+.event-block--compact.event-block--member-stripe {
+  position: relative;
+  padding-left: 8px;
+}
+
+.event-block--compact.event-block--member-stripe::before {
+  width: 3px;
+  border-radius: 2px 0 0 2px;
+}
+
+.event-block--dense.event-block--member-stripe {
+  padding-left: 7px;
+}
+
+.event-block--dense.event-block--member-stripe::before {
+  width: 3px;
 }
 
 .event-block-time {

@@ -21,7 +21,7 @@ interface TimeGridProps {
   events: CalendarEvent[]
   onSlotClick?: (date: Date) => void
   onEventClick: (event: CalendarEvent) => void
-  showOwnerLabels?: boolean
+  memberColors?: Record<string, string>
   /** Только неделя на телефоне */
   mobileWeekZoom?: WeekMobileZoom
 }
@@ -31,7 +31,7 @@ export function TimeGrid({
   events,
   onSlotClick,
   onEventClick,
-  showOwnerLabels,
+  memberColors,
   mobileWeekZoom,
 }: TimeGridProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -153,7 +153,7 @@ export function TimeGrid({
                     key={event.id}
                     event={event}
                     onClick={onEventClick}
-                    showOwnerLabel={showOwnerLabels && !denseEvents}
+                    memberColors={memberColors}
                     dense={denseEvents}
                     hourHeight={hourHeight}
                   />

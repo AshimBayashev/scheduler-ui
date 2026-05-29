@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { format, isSameDay } from 'date-fns'
 import { ru } from 'date-fns/locale'
+import { useClock } from '../../hooks/useClock'
 import type { CalendarEvent } from '../../types/event'
 import {
   createDefaultEnd,
@@ -20,15 +21,20 @@ interface TimeGridProps {
 
 export function TimeGrid({ days, events, onSlotClick, onEventClick }: TimeGridProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
-  const now = new Date()
-  const nowTop = now.getHours() * HOUR_HEIGHT + (now.getMinutes() / 60) * HOUR_HEIGHT
+  const now = useClock()
+  const nowTop =
+    now.getHours() * HOUR_HEIGHT +
+    (now.getMinutes() / 60) * HOUR_HEIGHT +
+    (now.getSeconds() / 3600) * HOUR_HEIGHT
 
   useEffect(() => {
     if (scrollRef.current) {
-      const scrollTo = Math.max(nowTop - 120, 0)
-      scrollRef.current.scrollTop = scrollTo
+      const initial = new Date()
+      const top =
+        initial.getHours() * HOUR_HEIGHT + (initial.getMinutes() / 60) * HOUR_HEIGHT
+      scrollRef.current.scrollTop = Math.max(top - 120, 0)
     }
-  }, [nowTop])
+  }, [])
 
   const getItemsForDay = (day: Date) =>
     events

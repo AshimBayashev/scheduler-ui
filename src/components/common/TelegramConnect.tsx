@@ -7,8 +7,13 @@ import {
 import { useTelegramStatus } from '../../hooks/useTelegramStatus'
 import './TelegramConnect.css'
 
+interface TelegramConnectProps {
+  /** На странице настроек — без дублирующего заголовка «Telegram». */
+  embedded?: boolean
+}
+
 /** Секция Telegram на странице профиля — всегда видна, если бот включён на сервере. */
-export function TelegramConnect() {
+export function TelegramConnect({ embedded = false }: TelegramConnectProps) {
   const { status, failed, refresh } = useTelegramStatus()
   const [link, setLink] = useState<TelegramLinkResponse | null>(null)
   const [loading, setLoading] = useState(false)
@@ -20,7 +25,7 @@ export function TelegramConnect() {
     return (
       <div className="telegram-connect telegram-connect--settings telegram-connect--warn">
         <div className="telegram-connect-text">
-          <strong>Telegram</strong>
+          {!embedded && <strong>Telegram</strong>}
           <span>Не удалось проверить статус. Обнови страницу.</span>
         </div>
       </div>
@@ -31,7 +36,7 @@ export function TelegramConnect() {
     return (
       <div className="telegram-connect telegram-connect--settings telegram-connect--warn">
         <div className="telegram-connect-text">
-          <strong>Telegram</strong>
+          {!embedded && <strong>Telegram</strong>}
           <span>Бот не настроен на сервере — напоминания в Telegram недоступны.</span>
         </div>
       </div>
@@ -73,14 +78,18 @@ export function TelegramConnect() {
   return (
     <div className="telegram-connect telegram-connect--settings" role="region" aria-label="Telegram">
       <div className="telegram-connect-text">
-        <strong>Telegram</strong>
+        {!embedded && <strong>Telegram</strong>}
         {status.linked ? (
           <span>
             Подключён{status.botUsername ? ` (@${status.botUsername})` : ''} — напоминания
             приходят в бота
           </span>
         ) : (
-          <span>Напоминания о делах и рутинах прямо в Telegram</span>
+          <span>
+            {embedded
+              ? 'Подключи бота — и напоминания будут приходить сюда'
+              : 'Напоминания о делах и рутинах прямо в Telegram'}
+          </span>
         )}
       </div>
 

@@ -12,6 +12,17 @@
 
 .telegram-connect--settings {
   margin: 0;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+}
+
+.telegram-connect--settings .telegram-connect-text {
+  min-width: 0;
+}
+
+.telegram-connect--settings .telegram-connect-btn {
+  align-self: flex-start;
 }
 
 .telegram-connect-text {

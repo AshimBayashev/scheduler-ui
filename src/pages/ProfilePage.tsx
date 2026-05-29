@@ -6,6 +6,12 @@ import { UserAvatar } from '../components/common/UserAvatar'
 import { resizeAvatar } from '../utils/resizeAvatar'
 import './ProfilePage.css'
 
+const SECTIONS = [
+  { id: 'profile-about', label: 'Обо мне' },
+  { id: 'profile-security', label: 'Безопасность' },
+  { id: 'profile-notify', label: 'Напоминания' },
+] as const
+
 export function ProfilePage() {
   const { user, updateUser } = useAuth()
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -114,144 +120,163 @@ export function ProfilePage() {
   return (
     <div className="profile-page">
       <header className="profile-header">
-        <h1 className="profile-title">Профиль</h1>
-        <p className="profile-subtitle">Имя, почта, пароль и уведомления</p>
+        <h1 className="profile-title">Настройки</h1>
+        <p className="profile-subtitle">Три блока — можно пройти по порядку или сразу к нужному</p>
       </header>
 
-      <section className="profile-card" aria-labelledby="profile-avatar-heading">
-        <h2 id="profile-avatar-heading" className="profile-card-title">
-          Фото
-        </h2>
-        <div className="profile-avatar-row">
-          <UserAvatar
-            name={user.name}
-            email={user.email}
-            avatarUrl={user.avatarUrl}
-            size="lg"
-          />
-          <div className="profile-avatar-actions">
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/jpeg,image/png,image/webp,image/gif"
-              className="profile-file-input"
-              onChange={(e) => handleAvatarPick(e.target.files?.[0])}
-            />
-            <button
-              type="button"
-              className="profile-btn profile-btn--secondary"
-              disabled={avatarSaving}
-              onClick={() => fileInputRef.current?.click()}
-            >
-              {avatarSaving ? 'Загрузка…' : 'Выбрать фото'}
-            </button>
-            {user.avatarUrl && (
-              <button
-                type="button"
-                className="profile-btn profile-btn--ghost"
-                disabled={avatarSaving}
-                onClick={handleRemoveAvatar}
-              >
-                Удалить
-              </button>
-            )}
+      <div className="profile-shell">
+        <nav className="profile-nav" aria-label="Разделы настроек">
+          {SECTIONS.map(({ id, label }) => (
+            <a key={id} href={`#${id}`} className="profile-nav-link">
+              {label}
+            </a>
+          ))}
+        </nav>
+
+        <div className="profile-zones">
+          <section id="profile-about" className="profile-zone profile-zone--about">
+            <div className="profile-zone-head">
+              <h2 className="profile-zone-title">Обо мне</h2>
+              <p className="profile-zone-lead">Имя и фото — так тебя видят на главной</p>
+            </div>
+
+            <div className="profile-about-body">
+              <div className="profile-about-photo">
+                <UserAvatar
+                  name={user.name}
+                  email={user.email}
+                  avatarUrl={user.avatarUrl}
+                  size="lg"
+                />
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  className="profile-file-input"
+                  onChange={(e) => handleAvatarPick(e.target.files?.[0])}
+                />
+                <div className="profile-avatar-actions">
+                  <button
+                    type="button"
+                    className="profile-btn profile-btn--secondary"
+                    disabled={avatarSaving}
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    {avatarSaving ? 'Загрузка…' : 'Фото'}
+                  </button>
+                  {user.avatarUrl && (
+                    <button
+                      type="button"
+                      className="profile-btn profile-btn--ghost"
+                      disabled={avatarSaving}
+                      onClick={handleRemoveAvatar}
+                    >
+                      Убрать
+                    </button>
+                  )}
+                </div>
+                {avatarError && <p className="profile-error">{avatarError}</p>}
+              </div>
+
+              <form className="profile-form" onSubmit={handleProfileSave}>
+                <label className="profile-field">
+                  <span>Имя</span>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Как к тебе обращаться"
+                    maxLength={100}
+                    autoComplete="name"
+                  />
+                </label>
+                <label className="profile-field">
+                  <span>Email</span>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    maxLength={254}
+                    autoComplete="email"
+                    required
+                  />
+                </label>
+                <div className="profile-form-footer">
+                  <button type="submit" className="profile-btn" disabled={profileSaving}>
+                    {profileSaving ? 'Сохранение…' : 'Сохранить'}
+                  </button>
+                  {profileMessage && <p className="profile-success">{profileMessage}</p>}
+                  {profileError && <p className="profile-error">{profileError}</p>}
+                </div>
+              </form>
+            </div>
+          </section>
+
+          <div className="profile-zones-row">
+            <section id="profile-security" className="profile-zone profile-zone--compact">
+              <div className="profile-zone-head">
+                <h2 className="profile-zone-title">Безопасность</h2>
+                <p className="profile-zone-lead">Пароль — только когда нужно сменить</p>
+              </div>
+
+              <details className="profile-password-panel">
+                <summary className="profile-password-summary">Сменить пароль</summary>
+                <form className="profile-form profile-form--nested" onSubmit={handlePasswordSave}>
+                  <label className="profile-field">
+                    <span>Текущий пароль</span>
+                    <input
+                      type="password"
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      autoComplete="current-password"
+                      required
+                    />
+                  </label>
+                  <label className="profile-field">
+                    <span>Новый пароль</span>
+                    <input
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      minLength={6}
+                      maxLength={128}
+                      autoComplete="new-password"
+                      required
+                    />
+                  </label>
+                  <label className="profile-field">
+                    <span>Ещё раз</span>
+                    <input
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      minLength={6}
+                      maxLength={128}
+                      autoComplete="new-password"
+                      required
+                    />
+                  </label>
+                  <div className="profile-form-footer">
+                    <button type="submit" className="profile-btn" disabled={passwordSaving}>
+                      {passwordSaving ? 'Сохранение…' : 'Обновить пароль'}
+                    </button>
+                    {passwordMessage && <p className="profile-success">{passwordMessage}</p>}
+                    {passwordError && <p className="profile-error">{passwordError}</p>}
+                  </div>
+                </form>
+              </details>
+            </section>
+
+            <section id="profile-notify" className="profile-zone profile-zone--compact">
+              <div className="profile-zone-head">
+                <h2 className="profile-zone-title">Напоминания</h2>
+                <p className="profile-zone-lead">Telegram — пинги о делах и рутинах</p>
+              </div>
+              <TelegramConnect embedded />
+            </section>
           </div>
         </div>
-        {avatarError && <p className="profile-error">{avatarError}</p>}
-      </section>
-
-      <section className="profile-card" aria-labelledby="profile-info-heading">
-        <h2 id="profile-info-heading" className="profile-card-title">
-          Основное
-        </h2>
-        <form className="profile-form" onSubmit={handleProfileSave}>
-          <label className="profile-field">
-            <span>Имя</span>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Как к тебе обращаться"
-              maxLength={100}
-              autoComplete="name"
-            />
-          </label>
-          <label className="profile-field">
-            <span>Email</span>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              maxLength={254}
-              autoComplete="email"
-              required
-            />
-          </label>
-          <div className="profile-form-footer">
-            <button type="submit" className="profile-btn" disabled={profileSaving}>
-              {profileSaving ? 'Сохранение…' : 'Сохранить'}
-            </button>
-            {profileMessage && <p className="profile-success">{profileMessage}</p>}
-            {profileError && <p className="profile-error">{profileError}</p>}
-          </div>
-        </form>
-      </section>
-
-      <section className="profile-card" aria-labelledby="profile-password-heading">
-        <h2 id="profile-password-heading" className="profile-card-title">
-          Пароль
-        </h2>
-        <form className="profile-form" onSubmit={handlePasswordSave}>
-          <label className="profile-field">
-            <span>Текущий пароль</span>
-            <input
-              type="password"
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-              autoComplete="current-password"
-              required
-            />
-          </label>
-          <label className="profile-field">
-            <span>Новый пароль</span>
-            <input
-              type="password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              minLength={6}
-              maxLength={128}
-              autoComplete="new-password"
-              required
-            />
-          </label>
-          <label className="profile-field">
-            <span>Повтор нового пароля</span>
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              minLength={6}
-              maxLength={128}
-              autoComplete="new-password"
-              required
-            />
-          </label>
-          <div className="profile-form-footer">
-            <button type="submit" className="profile-btn" disabled={passwordSaving}>
-              {passwordSaving ? 'Сохранение…' : 'Сменить пароль'}
-            </button>
-            {passwordMessage && <p className="profile-success">{passwordMessage}</p>}
-            {passwordError && <p className="profile-error">{passwordError}</p>}
-          </div>
-        </form>
-      </section>
-
-      <section className="profile-card" aria-labelledby="profile-telegram-heading">
-        <h2 id="profile-telegram-heading" className="profile-card-title">
-          Telegram
-        </h2>
-        <TelegramConnect />
-      </section>
+      </div>
     </div>
   )
 }

@@ -63,17 +63,17 @@ export function HomePage() {
     <div className="home-page">
       <header className="home-header">
         <div className="home-greeting">
-          {user && (
-            <UserAvatar
-              name={user.name}
-              email={user.email}
-              avatarUrl={user.avatarUrl}
-              size="sm"
-              className="home-greeting-avatar"
-            />
-          )}
-          <div>
-            <p className="home-greeting-line">{greeting},</p>
+          <p className="home-greeting-line">{greeting},</p>
+          <div className="home-greeting-name-row">
+            {user && (
+              <UserAvatar
+                name={user.name}
+                email={user.email}
+                avatarUrl={user.avatarUrl}
+                size="sm"
+                className="home-greeting-avatar"
+              />
+            )}
             <h1 className="home-greeting-name">{displayName}</h1>
           </div>
         </div>

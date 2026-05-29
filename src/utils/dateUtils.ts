@@ -68,15 +68,16 @@ export function getMonthDays(date: Date): Date[] {
   return eachDayOfInterval({ start: gridStart, end: gridEnd })
 }
 
-export function getEventTop(start: Date): number {
+export function getEventTop(start: Date, hourHeight = HOUR_HEIGHT): number {
   const hours = start.getHours() + start.getMinutes() / 60
-  return hours * HOUR_HEIGHT
+  return hours * hourHeight
 }
 
-export function getEventHeight(start: Date, end: Date): number {
+export function getEventHeight(start: Date, end: Date, hourHeight = HOUR_HEIGHT): number {
   const durationMs = end.getTime() - start.getTime()
   const hours = durationMs / (1000 * 60 * 60)
-  return Math.max(hours * HOUR_HEIGHT, MIN_EVENT_HEIGHT)
+  const minHeight = hourHeight / 2
+  return Math.max(hours * hourHeight, minHeight)
 }
 
 export function roundToHalfHour(date: Date): Date {

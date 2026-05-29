@@ -8,8 +8,11 @@ import {
   DAY_SLOTS,
   HOUR_HEIGHT,
   HOURS,
-  SLOT_HEIGHT,
 } from '../../utils/dateUtils'
+import {
+  MOBILE_WEEK_HOUR_HEIGHT_OVERVIEW,
+  type WeekMobileZoom,
+} from '../../utils/weekMobileZoom'
 import { EventBlock } from './EventBlock'
 import './TimeGrid.css'
 
@@ -19,24 +22,45 @@ interface TimeGridProps {
   onSlotClick?: (date: Date) => void
   onEventClick: (event: CalendarEvent) => void
   showOwnerLabels?: boolean
+  /** Только неделя на телефоне */
+  mobileWeekZoom?: WeekMobileZoom
 }
 
-export function TimeGrid({ days, events, onSlotClick, onEventClick, showOwnerLabels }: TimeGridProps) {
+export function TimeGrid({
+  days,
+  events,
+  onSlotClick,
+  onEventClick,
+  showOwnerLabels,
+  mobileWeekZoom,
+}: TimeGridProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const now = useClock()
+  const isMobileWeek = days.length > 1 && !!mobileWeekZoom
+  const hourHeight =
+    isMobileWeek && mobileWeekZoom === 'overview'
+      ? MOBILE_WEEK_HOUR_HEIGHT_OVERVIEW
+      : HOUR_HEIGHT
+  const slotHeight = hourHeight / 2
+  const denseEvents = isMobileWeek && mobileWeekZoom === 'overview'
+
   const nowTop =
-    now.getHours() * HOUR_HEIGHT +
-    (now.getMinutes() / 60) * HOUR_HEIGHT +
-    (now.getSeconds() / 3600) * HOUR_HEIGHT
+    now.getHours() * hourHeight +
+    (now.getMinutes() / 60) * hourHeight +
+    (now.getSeconds() / 3600) * hourHeight
+
+  const scrollToNow = () => {
+    if (!scrollRef.current) return
+    scrollRef.current.scrollTop = Math.max(nowTop - 120, 0)
+  }
 
   useEffect(() => {
-    if (scrollRef.current) {
-      const initial = new Date()
-      const top =
-        initial.getHours() * HOUR_HEIGHT + (initial.getMinutes() / 60) * HOUR_HEIGHT
-      scrollRef.current.scrollTop = Math.max(top - 120, 0)
-    }
+    scrollToNow()
   }, [])
+
+  useEffect(() => {
+    if (isMobileWeek) scrollToNow()
+  }, [mobileWeekZoom, isMobileWeek])
 
   const getItemsForDay = (day: Date) =>
     events
@@ -58,7 +82,14 @@ export function TimeGrid({ days, events, onSlotClick, onEventClick, showOwnerLab
       <div
         className="time-grid"
         data-multi-day={days.length > 1 ? 'true' : undefined}
-        style={{ '--day-count': days.length } as React.CSSProperties}
+        data-mobile-week={isMobileWeek ? mobileWeekZoom : undefined}
+        style={
+          {
+            '--day-count': days.length,
+            '--hour-height': `${hourHeight}px`,
+            '--slot-height': `${slotHeight}px`,
+          } as React.CSSProperties
+        }
       >
         <div className="time-grid-gutter">
           <div className="time-grid-corner" />
@@ -66,7 +97,7 @@ export function TimeGrid({ days, events, onSlotClick, onEventClick, showOwnerLab
             const label = new Date()
             label.setHours(hour, 0, 0, 0)
             return (
-              <div key={hour} className="time-label" style={{ height: HOUR_HEIGHT }}>
+              <div key={hour} className="time-label" style={{ height: hourHeight }}>
                 {hour > 0 ? format(label, 'HH:mm') : ''}
               </div>
             )
@@ -107,7 +138,7 @@ export function TimeGrid({ days, events, onSlotClick, onEventClick, showOwnerLab
                     ]
                       .filter(Boolean)
                       .join(' ')}
-                    style={{ height: SLOT_HEIGHT }}
+                    style={{ height: slotHeight }}
                     onClick={() => handleSlotClick(day, slotIndex)}
                     aria-label={`Создать дело ${format(day, 'd MMM', { locale: ru })} ${String(Math.floor(slotIndex / 2)).padStart(2, '0')}:${slotIndex % 2 === 0 ? '00' : '30'}`}
                   />
@@ -122,7 +153,9 @@ export function TimeGrid({ days, events, onSlotClick, onEventClick, showOwnerLab
                     key={event.id}
                     event={event}
                     onClick={onEventClick}
-                    showOwnerLabel={showOwnerLabels}
+                    showOwnerLabel={showOwnerLabels && !denseEvents}
+                    dense={denseEvents}
+                    hourHeight={hourHeight}
                   />
                 ))}
               </div>

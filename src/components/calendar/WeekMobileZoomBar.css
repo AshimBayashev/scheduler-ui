@@ -1,0 +1,46 @@
+.week-mobile-zoom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--surface-secondary);
+  flex-shrink: 0;
+}
+
+.week-mobile-zoom-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.week-mobile-zoom-options {
+  display: flex;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.week-mobile-zoom-btn {
+  padding: 6px 14px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.week-mobile-zoom-btn:not(:last-child) {
+  border-right: 1px solid var(--border-color);
+}
+
+.week-mobile-zoom-btn--active {
+  background: var(--accent-primary);
+  color: #fff;
+}
+
+.week-mobile-zoom-btn--active + .week-mobile-zoom-btn {
+  border-left-color: transparent;
+}

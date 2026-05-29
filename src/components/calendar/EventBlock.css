@@ -73,6 +73,21 @@
   border-radius: 2px;
 }
 
+.event-block--dense {
+  padding: 1px 4px;
+  min-height: 12px;
+  gap: 0;
+}
+
+.event-block--dense .event-block-title {
+  font-size: 9px;
+  line-height: 1.2;
+}
+
+.event-block--dense.event-block--routine {
+  border-width: 1px;
+}
+
 .event-block--compact .event-block-title {
   font-size: 11px;
 }

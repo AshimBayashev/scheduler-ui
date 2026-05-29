@@ -10,9 +10,18 @@ interface EventBlockProps {
   onClick: (event: CalendarEvent) => void
   compact?: boolean
   showOwnerLabel?: boolean
+  dense?: boolean
+  hourHeight?: number
 }
 
-export function EventBlock({ event, onClick, compact, showOwnerLabel }: EventBlockProps) {
+export function EventBlock({
+  event,
+  onClick,
+  compact,
+  showOwnerLabel,
+  dense,
+  hourHeight,
+}: EventBlockProps) {
   const color = event.color ?? 'var(--accent-primary)'
   const isRoutine = event.isRoutine
   const ownerLabel = showOwnerLabel && event.ownerName ? event.ownerName : null
@@ -38,13 +47,19 @@ export function EventBlock({ event, onClick, compact, showOwnerLabel }: EventBlo
     )
   }
 
-  const top = getEventTop(event.start)
-  const height = getEventHeight(event.start, event.end)
+  const top = getEventTop(event.start, hourHeight)
+  const height = getEventHeight(event.start, event.end, hourHeight)
 
   return (
     <button
       type="button"
-      className={['event-block', isRoutine && 'event-block--routine'].filter(Boolean).join(' ')}
+      className={[
+        'event-block',
+        isRoutine && 'event-block--routine',
+        dense && 'event-block--dense',
+      ]
+        .filter(Boolean)
+        .join(' ')}
       style={{
         top: `${top}px`,
         height: `${height}px`,
@@ -60,13 +75,13 @@ export function EventBlock({ event, onClick, compact, showOwnerLabel }: EventBlo
         <OverflowTooltipText text={ownerLabel} className="event-block-owner" />
       )}
       <OverflowTooltipText text={event.title} className="event-block-title" />
-      {!isRoutine && (
+      {!dense && !isRoutine && (
         <span className="event-block-time">
           {format(event.start, 'HH:mm', { locale: ru })} –{' '}
           {format(event.end, 'HH:mm', { locale: ru })}
         </span>
       )}
-      {isRoutine && (
+      {!dense && isRoutine && (
         <span className="event-block-time">рутина · {format(event.start, 'HH:mm', { locale: ru })}</span>
       )}
     </button>

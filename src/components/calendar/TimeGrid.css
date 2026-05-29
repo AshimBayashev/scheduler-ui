@@ -161,21 +161,64 @@
     font-size: 14px;
   }
 
+  .day-header-weekday {
+    font-size: 10px;
+  }
+
   .time-label {
     font-size: 10px;
     padding-right: 4px;
   }
 
-  .time-grid[data-multi-day='true'] {
+  /* Неделя: обзор — все 7 дней на ширину экрана */
+  .time-grid[data-mobile-week='overview'] {
+    min-width: 100%;
+  }
+
+  .time-grid[data-mobile-week='overview'] .time-grid-day-headers,
+  .time-grid[data-mobile-week='overview'] .time-grid-body {
+    grid-template-columns: repeat(var(--day-count), minmax(0, 1fr));
+  }
+
+  .time-grid[data-mobile-week='overview'] .time-grid-column {
+    min-width: 0;
+  }
+
+  .time-grid[data-mobile-week='overview'] .day-header-weekday {
+    font-size: 9px;
+  }
+
+  .time-grid[data-mobile-week='overview'] .day-header-date {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+  }
+
+  /* Неделя: крупно — широкие колонки, горизонтальный скролл */
+  .time-grid[data-mobile-week='detail'] {
+    min-width: calc(var(--day-count) * 96px + 44px);
+  }
+
+  .time-grid[data-mobile-week='detail'] .time-grid-day-headers,
+  .time-grid[data-mobile-week='detail'] .time-grid-body {
+    grid-template-columns: repeat(var(--day-count), 96px);
+  }
+
+  .time-grid[data-mobile-week='detail'] .time-grid-column {
+    min-width: 96px;
+  }
+
+  /* Fallback для недели без переключателя (desktop narrow) */
+  .time-grid[data-multi-day='true']:not([data-mobile-week]) {
     min-width: calc(var(--day-count) * 72px + 44px);
   }
 
-  .time-grid[data-multi-day='true'] .time-grid-day-headers,
-  .time-grid[data-multi-day='true'] .time-grid-body {
+  .time-grid[data-multi-day='true']:not([data-mobile-week]) .time-grid-day-headers,
+  .time-grid[data-multi-day='true']:not([data-mobile-week]) .time-grid-body {
     grid-template-columns: repeat(var(--day-count), 72px);
   }
 
-  .time-grid[data-multi-day='true'] .time-grid-column {
+  .time-grid[data-multi-day='true']:not([data-mobile-week]) .time-grid-column {
     min-width: 72px;
   }
 }

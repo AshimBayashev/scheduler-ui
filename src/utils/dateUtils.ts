@@ -21,6 +21,9 @@ import type { CalendarView } from '../types/event'
 
 export const HOURS = Array.from({ length: 24 }, (_, i) => i)
 export const HOUR_HEIGHT = 48
+export const SLOTS_PER_HOUR = 2
+export const SLOT_HEIGHT = HOUR_HEIGHT / SLOTS_PER_HOUR
+export const DAY_SLOTS = HOURS.length * SLOTS_PER_HOUR
 
 export function formatDateRange(date: Date, view: CalendarView): string {
   switch (view) {

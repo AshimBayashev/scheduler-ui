@@ -7,6 +7,7 @@
 .time-grid {
   display: flex;
   min-width: 100%;
+  --time-grid-header-height: 63px;
 }
 
 .time-grid-gutter {
@@ -19,7 +20,8 @@
 }
 
 .time-grid-corner {
-  height: 48px;
+  height: var(--time-grid-header-height);
+  box-sizing: border-box;
   border-bottom: 1px solid var(--border-color);
   position: sticky;
   top: 0;
@@ -47,6 +49,8 @@
 .time-grid-day-headers {
   display: grid;
   grid-template-columns: repeat(var(--day-count), minmax(0, 1fr));
+  height: var(--time-grid-header-height);
+  box-sizing: border-box;
   position: sticky;
   top: 0;
   z-index: 3;
@@ -58,6 +62,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  height: 100%;
+  box-sizing: border-box;
   padding: 8px 4px;
   gap: 2px;
   border-right: 1px solid var(--border-color);
@@ -106,6 +113,10 @@
   display: block;
 }
 
+.time-slot--hour-end {
+  border-bottom-color: var(--border-color);
+}
+
 .time-slot:hover {
   background: var(--slot-hover);
 }
@@ -132,17 +143,12 @@
 }
 
 @media (max-width: 768px) {
+  .time-grid {
+    --time-grid-header-height: 55px;
+  }
+
   .time-grid-gutter {
     width: 44px;
-  }
-
-  .time-grid-corner {
-    height: 44px;
-  }
-
-  .time-label {
-    font-size: 10px;
-    padding-right: 4px;
   }
 
   .day-header {
@@ -153,6 +159,11 @@
     width: 28px;
     height: 28px;
     font-size: 14px;
+  }
+
+  .time-label {
+    font-size: 10px;
+    padding-right: 4px;
   }
 
   .time-grid[data-multi-day='true'] {

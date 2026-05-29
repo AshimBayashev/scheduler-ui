@@ -5,9 +5,10 @@ import { useClock } from '../../hooks/useClock'
 import type { CalendarEvent } from '../../types/event'
 import {
   createDefaultEnd,
+  DAY_SLOTS,
   HOUR_HEIGHT,
   HOURS,
-  roundToHalfHour,
+  SLOT_HEIGHT,
 } from '../../utils/dateUtils'
 import { EventBlock } from './EventBlock'
 import './TimeGrid.css'
@@ -45,11 +46,11 @@ export function TimeGrid({ days, events, onSlotClick, onEventClick, showOwnerLab
         return a.isRoutine ? -1 : 1
       })
 
-  const handleSlotClick = (day: Date, hour: number) => {
+  const handleSlotClick = (day: Date, slotIndex: number) => {
     if (!onSlotClick) return
     const slot = new Date(day)
-    slot.setHours(hour, 0, 0, 0)
-    onSlotClick(roundToHalfHour(slot))
+    slot.setHours(Math.floor(slotIndex / 2), (slotIndex % 2) * 30, 0, 0)
+    onSlotClick(slot)
   }
 
   return (
@@ -96,14 +97,19 @@ export function TimeGrid({ days, events, onSlotClick, onEventClick, showOwnerLab
           <div className="time-grid-body">
             {days.map((day) => (
               <div key={day.toISOString()} className="time-grid-column">
-                {HOURS.map((hour) => (
+                {Array.from({ length: DAY_SLOTS }, (_, slotIndex) => (
                   <button
-                    key={hour}
+                    key={slotIndex}
                     type="button"
-                    className="time-slot"
-                    style={{ height: HOUR_HEIGHT }}
-                    onClick={() => handleSlotClick(day, hour)}
-                    aria-label={`Создать дело ${format(day, 'd MMM', { locale: ru })} ${hour}:00`}
+                    className={[
+                      'time-slot',
+                      slotIndex % 2 === 1 && 'time-slot--hour-end',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
+                    style={{ height: SLOT_HEIGHT }}
+                    onClick={() => handleSlotClick(day, slotIndex)}
+                    aria-label={`Создать дело ${format(day, 'd MMM', { locale: ru })} ${String(Math.floor(slotIndex / 2)).padStart(2, '0')}:${slotIndex % 2 === 0 ? '00' : '30'}`}
                   />
                 ))}
 

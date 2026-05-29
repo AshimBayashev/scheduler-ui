@@ -3,7 +3,7 @@ export type WeekMobileZoom = 'overview' | 'detail'
 export const MOBILE_WEEK_ZOOM_KEY = 'scheduler-week-mobile-zoom'
 
 /** Компактная сетка: вся неделя на экране */
-export const MOBILE_WEEK_HOUR_HEIGHT_OVERVIEW = 36
+export const MOBILE_WEEK_HOUR_HEIGHT_OVERVIEW = 48
 
 /** Читаемые колонки с горизонтальным скроллом */
 export const MOBILE_WEEK_DAY_WIDTH_DETAIL = 96

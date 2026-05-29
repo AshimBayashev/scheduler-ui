@@ -4,7 +4,7 @@ import type { CalendarEvent } from '../../types/event'
 import type { FamilyMemberVisual } from '../../utils/familyMemberColors'
 import { OverflowTooltipText } from '../common/OverflowTooltipText'
 import { UserAvatar } from '../common/UserAvatar'
-import { getEventHeight, getEventTop } from '../../utils/dateUtils'
+import { getEventHeight, getEventTop, HOUR_HEIGHT } from '../../utils/dateUtils'
 import './EventBlock.css'
 
 interface EventBlockProps {
@@ -93,12 +93,20 @@ export function EventBlock({
   }
 
   const top = getEventTop(event.start, hourHeight)
-  const height = getEventHeight(event.start, event.end, hourHeight)
+  const slotHourHeight = hourHeight ?? HOUR_HEIGHT
+  const height = getEventHeight(event.start, event.end, slotHourHeight)
+  const isShort = height <= slotHourHeight / 2
+  const showTime = !dense && !isShort
 
   return (
     <button
       type="button"
-      className={blockClassName}
+      className={[
+        blockClassName,
+        isShort && 'event-block--short',
+      ]
+        .filter(Boolean)
+        .join(' ')}
       style={{
         ...blockStyle,
         top: `${top}px`,
@@ -115,13 +123,13 @@ export function EventBlock({
         <EventMemberBadge member={member} small={dense} />
       )}
       <OverflowTooltipText text={event.title} className="event-block-title" />
-      {!dense && !isRoutine && (
+      {showTime && !isRoutine && (
         <span className="event-block-time">
           {format(event.start, 'HH:mm', { locale: ru })} –{' '}
           {format(event.end, 'HH:mm', { locale: ru })}
         </span>
       )}
-      {!dense && isRoutine && (
+      {showTime && isRoutine && (
         <span className="event-block-time">
           рутина · {format(event.start, 'HH:mm', { locale: ru })}
         </span>

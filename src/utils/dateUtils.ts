@@ -20,7 +20,7 @@ import { ru } from 'date-fns/locale'
 import type { CalendarView } from '../types/event'
 
 export const HOURS = Array.from({ length: 24 }, (_, i) => i)
-export const HOUR_HEIGHT = 72
+export const HOUR_HEIGHT = 96
 export const SLOTS_PER_HOUR = 2
 export const SLOT_HEIGHT = HOUR_HEIGHT / SLOTS_PER_HOUR
 export const MIN_EVENT_HEIGHT = HOUR_HEIGHT / 2

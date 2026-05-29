@@ -42,9 +42,28 @@
 .event-block-title {
   font-size: 12px;
   font-weight: 600;
+  line-height: 1.25;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.event-block--short {
+  padding: 3px 6px;
+  gap: 0;
+  justify-content: center;
+}
+
+.event-block--short.event-block--member-stripe {
+  padding-left: 10px;
+}
+
+.event-block--short.event-block--member-badge:not(.event-block--compact) {
+  padding-top: 6px;
+}
+
+.event-block--short .event-block-time {
+  display: none;
 }
 
 .event-block--member-stripe {

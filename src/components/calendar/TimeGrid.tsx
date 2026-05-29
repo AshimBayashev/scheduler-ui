@@ -13,7 +13,6 @@ import {
   MOBILE_WEEK_HOUR_HEIGHT_OVERVIEW,
   type WeekMobileZoom,
 } from '../../utils/weekMobileZoom'
-import type { FamilyMemberVisual } from '../../utils/familyMemberVisuals'
 import { EventBlock } from './EventBlock'
 import './TimeGrid.css'
 
@@ -22,7 +21,7 @@ interface TimeGridProps {
   events: CalendarEvent[]
   onSlotClick?: (date: Date) => void
   onEventClick: (event: CalendarEvent) => void
-  familyMemberVisuals?: Map<string, FamilyMemberVisual>
+  showOwnerLabels?: boolean
   /** Только неделя на телефоне */
   mobileWeekZoom?: WeekMobileZoom
 }
@@ -32,7 +31,7 @@ export function TimeGrid({
   events,
   onSlotClick,
   onEventClick,
-  familyMemberVisuals,
+  showOwnerLabels,
   mobileWeekZoom,
 }: TimeGridProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -154,7 +153,7 @@ export function TimeGrid({
                     key={event.id}
                     event={event}
                     onClick={onEventClick}
-                    familyMemberVisuals={familyMemberVisuals}
+                    showOwnerLabel={showOwnerLabels && !denseEvents}
                     dense={denseEvents}
                     hourHeight={hourHeight}
                   />

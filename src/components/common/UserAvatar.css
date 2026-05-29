@@ -11,12 +11,6 @@
   user-select: none;
 }
 
-.user-avatar--xs {
-  width: 18px;
-  height: 18px;
-  font-size: 8px;
-}
-
 .user-avatar--sm {
   width: 32px;
   height: 32px;

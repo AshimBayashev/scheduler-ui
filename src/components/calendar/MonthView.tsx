@@ -1,7 +1,6 @@
 import { format, isSameDay, isSameMonth, isToday } from 'date-fns'
 import type { CalendarEvent } from '../../types/event'
 import { getMonthDays } from '../../utils/dateUtils'
-import type { FamilyMemberVisual } from '../../utils/familyMemberVisuals'
 import { EventBlock } from './EventBlock'
 import './MonthView.css'
 
@@ -10,7 +9,7 @@ interface MonthViewProps {
   events: CalendarEvent[]
   onDayClick: (date: Date) => void
   onEventClick: (event: CalendarEvent) => void
-  familyMemberVisuals?: Map<string, FamilyMemberVisual>
+  showOwnerLabels?: boolean
 }
 
 const WEEKDAYS = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
@@ -20,7 +19,7 @@ export function MonthView({
   events,
   onDayClick,
   onEventClick,
-  familyMemberVisuals,
+  showOwnerLabels,
 }: MonthViewProps) {
   const days = getMonthDays(date)
 
@@ -65,7 +64,7 @@ export function MonthView({
                     event={event}
                     onClick={onEventClick}
                     compact
-                    familyMemberVisuals={familyMemberVisuals}
+                    showOwnerLabel={showOwnerLabels}
                   />
                 ))}
                 {dayEvents.length > 3 && (

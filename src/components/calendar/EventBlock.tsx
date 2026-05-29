@@ -1,90 +1,47 @@
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import type { CalendarEvent } from '../../types/event'
-import { UserAvatar } from '../common/UserAvatar'
 import { OverflowTooltipText } from '../common/OverflowTooltipText'
 import { getEventHeight, getEventTop } from '../../utils/dateUtils'
-import {
-  getFamilyMemberVisual,
-  type FamilyMemberVisual,
-} from '../../utils/familyMemberVisuals'
 import './EventBlock.css'
 
 interface EventBlockProps {
   event: CalendarEvent
   onClick: (event: CalendarEvent) => void
   compact?: boolean
-  familyMemberVisuals?: Map<string, FamilyMemberVisual>
+  showOwnerLabel?: boolean
   dense?: boolean
   hourHeight?: number
-}
-
-function memberTooltip(event: CalendarEvent, member: FamilyMemberVisual) {
-  return `${member.name}: ${event.title}`
-}
-
-function OwnerBadge({
-  member,
-  compact,
-}: {
-  member: FamilyMemberVisual
-  compact?: boolean
-}) {
-  return (
-    <span
-      className={['event-block-owner-badge', compact && 'event-block-owner-badge--compact']
-        .filter(Boolean)
-        .join(' ')}
-      style={{ '--owner-accent': member.accentColor } as React.CSSProperties}
-    >
-      <UserAvatar
-        name={member.name}
-        email={member.email}
-        avatarUrl={member.avatarUrl}
-        size="xs"
-      />
-    </span>
-  )
 }
 
 export function EventBlock({
   event,
   onClick,
   compact,
-  familyMemberVisuals,
+  showOwnerLabel,
   dense,
   hourHeight,
 }: EventBlockProps) {
   const color = event.color ?? 'var(--accent-primary)'
   const isRoutine = event.isRoutine
-  const owner = getFamilyMemberVisual(familyMemberVisuals, event.ownerUserId)
-  const tooltipExtra = owner ? memberTooltip(event, owner) : event.title
+  const ownerLabel = showOwnerLabel && event.ownerName ? event.ownerName : null
 
   if (compact) {
     return (
       <button
         type="button"
-        className={[
-          'event-block',
-          'event-block--compact',
-          isRoutine && 'event-block--routine',
-          owner && 'event-block--family-owner',
-        ]
+        className={['event-block', 'event-block--compact', isRoutine && 'event-block--routine']
           .filter(Boolean)
           .join(' ')}
-        style={
-          {
-            '--block-color': color,
-            '--owner-accent': owner?.accentColor,
-          } as React.CSSProperties
-        }
+        style={{ '--block-color': color } as React.CSSProperties}
         onClick={(e) => {
           e.stopPropagation()
           onClick(event)
         }}
-        title={owner ? tooltipExtra : undefined}
       >
-        {owner && <OwnerBadge member={owner} compact />}
+        {ownerLabel && (
+          <OverflowTooltipText text={ownerLabel} className="event-block-owner" />
+        )}
         <OverflowTooltipText text={event.title} className="event-block-title" />
       </button>
     )
@@ -100,7 +57,6 @@ export function EventBlock({
         'event-block',
         isRoutine && 'event-block--routine',
         dense && 'event-block--dense',
-        owner && 'event-block--family-owner',
       ]
         .filter(Boolean)
         .join(' ')}
@@ -108,16 +64,16 @@ export function EventBlock({
         top: `${top}px`,
         height: `${height}px`,
         '--block-color': color,
-        '--owner-accent': owner?.accentColor,
         zIndex: isRoutine ? 1 : 2,
       } as React.CSSProperties}
-      title={owner ? tooltipExtra : undefined}
       onClick={(e) => {
         e.stopPropagation()
         onClick(event)
       }}
     >
-      {owner && <OwnerBadge member={owner} />}
+      {ownerLabel && (
+        <OverflowTooltipText text={ownerLabel} className="event-block-owner" />
+      )}
       <OverflowTooltipText text={event.title} className="event-block-title" />
       {!dense && !isRoutine && (
         <span className="event-block-time">

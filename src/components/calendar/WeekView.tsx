@@ -11,12 +11,14 @@ import { TimeGrid } from './TimeGrid'
 import { WeekMobileZoomBar } from './WeekMobileZoomBar'
 import './WeekView.css'
 
+import type { FamilyMemberVisual } from '../../utils/familyMemberColors'
+
 interface WeekViewProps {
   date: Date
   events: CalendarEvent[]
   onSlotClick?: (date: Date) => void
   onEventClick: (event: CalendarEvent) => void
-  memberColors?: Record<string, string>
+  memberVisuals?: Record<string, FamilyMemberVisual>
 }
 
 export function WeekView({
@@ -24,7 +26,7 @@ export function WeekView({
   events,
   onSlotClick,
   onEventClick,
-  memberColors,
+  memberVisuals,
 }: WeekViewProps) {
   const isMobile = useMediaQuery(MOBILE_BREAKPOINT)
   const [mobileZoom, setMobileZoom] = useState<WeekMobileZoom>(readWeekMobileZoom)
@@ -44,7 +46,7 @@ export function WeekView({
         events={events}
         onSlotClick={onSlotClick}
         onEventClick={onEventClick}
-        memberColors={memberColors}
+        memberVisuals={memberVisuals}
         mobileWeekZoom={isMobile ? mobileZoom : undefined}
       />
     </div>

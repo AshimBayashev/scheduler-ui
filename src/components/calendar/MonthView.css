@@ -80,6 +80,11 @@
   overflow: hidden;
 }
 
+.month-cell-events--family-badges {
+  overflow: visible;
+  padding-top: 4px;
+}
+
 .month-cell-more {
   font-size: 11px;
   color: var(--text-secondary);

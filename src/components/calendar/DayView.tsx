@@ -1,12 +1,14 @@
 import type { CalendarEvent } from '../../types/event'
 import { TimeGrid } from './TimeGrid'
 
+import type { FamilyMemberVisual } from '../../utils/familyMemberColors'
+
 interface DayViewProps {
   date: Date
   events: CalendarEvent[]
   onSlotClick?: (date: Date) => void
   onEventClick: (event: CalendarEvent) => void
-  memberColors?: Record<string, string>
+  memberVisuals?: Record<string, FamilyMemberVisual>
 }
 
 export function DayView({
@@ -14,7 +16,7 @@ export function DayView({
   events,
   onSlotClick,
   onEventClick,
-  memberColors,
+  memberVisuals,
 }: DayViewProps) {
   return (
     <TimeGrid
@@ -22,7 +24,7 @@ export function DayView({
       events={events}
       onSlotClick={onSlotClick}
       onEventClick={onEventClick}
-      memberColors={memberColors}
+      memberVisuals={memberVisuals}
     />
   )
 }

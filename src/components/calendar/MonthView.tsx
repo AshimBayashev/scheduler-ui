@@ -4,12 +4,14 @@ import { getMonthDays } from '../../utils/dateUtils'
 import { EventBlock } from './EventBlock'
 import './MonthView.css'
 
+import type { FamilyMemberVisual } from '../../utils/familyMemberColors'
+
 interface MonthViewProps {
   date: Date
   events: CalendarEvent[]
   onDayClick: (date: Date) => void
   onEventClick: (event: CalendarEvent) => void
-  memberColors?: Record<string, string>
+  memberVisuals?: Record<string, FamilyMemberVisual>
 }
 
 const WEEKDAYS = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
@@ -19,7 +21,7 @@ export function MonthView({
   events,
   onDayClick,
   onEventClick,
-  memberColors,
+  memberVisuals,
 }: MonthViewProps) {
   const days = getMonthDays(date)
 
@@ -57,14 +59,21 @@ export function MonthView({
               onClick={() => onDayClick(day)}
             >
               <span className="month-cell-date">{format(day, 'd')}</span>
-              <div className="month-cell-events">
+              <div
+                className={[
+                  'month-cell-events',
+                  memberVisuals && 'month-cell-events--family-badges',
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
+              >
                 {dayEvents.slice(0, 3).map((event) => (
                   <EventBlock
                     key={event.id}
                     event={event}
                     onClick={onEventClick}
                     compact
-                    memberColors={memberColors}
+                    memberVisuals={memberVisuals}
                   />
                 ))}
                 {dayEvents.length > 3 && (

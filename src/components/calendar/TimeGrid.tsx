@@ -16,12 +16,14 @@ import {
 import { EventBlock } from './EventBlock'
 import './TimeGrid.css'
 
+import type { FamilyMemberVisual } from '../../utils/familyMemberColors'
+
 interface TimeGridProps {
   days: Date[]
   events: CalendarEvent[]
   onSlotClick?: (date: Date) => void
   onEventClick: (event: CalendarEvent) => void
-  memberColors?: Record<string, string>
+  memberVisuals?: Record<string, FamilyMemberVisual>
   /** Только неделя на телефоне */
   mobileWeekZoom?: WeekMobileZoom
 }
@@ -31,7 +33,7 @@ export function TimeGrid({
   events,
   onSlotClick,
   onEventClick,
-  memberColors,
+  memberVisuals,
   mobileWeekZoom,
 }: TimeGridProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -153,7 +155,7 @@ export function TimeGrid({
                     key={event.id}
                     event={event}
                     onClick={onEventClick}
-                    memberColors={memberColors}
+                    memberVisuals={memberVisuals}
                     dense={denseEvents}
                     hourHeight={hourHeight}
                   />

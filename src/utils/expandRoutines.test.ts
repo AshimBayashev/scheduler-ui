@@ -5,7 +5,6 @@ import type { Routine } from '../types/routine'
 const routine: Routine = {
   id: 'r1',
   title: 'Зарядка',
-  description: null,
   startTime: '08:00',
   durationMinutes: 30,
   daysOfWeek: [1, 3, 5],

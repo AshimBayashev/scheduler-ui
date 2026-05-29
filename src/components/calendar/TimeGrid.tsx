@@ -15,11 +15,12 @@ import './TimeGrid.css'
 interface TimeGridProps {
   days: Date[]
   events: CalendarEvent[]
-  onSlotClick: (date: Date) => void
+  onSlotClick?: (date: Date) => void
   onEventClick: (event: CalendarEvent) => void
+  showOwnerLabels?: boolean
 }
 
-export function TimeGrid({ days, events, onSlotClick, onEventClick }: TimeGridProps) {
+export function TimeGrid({ days, events, onSlotClick, onEventClick, showOwnerLabels }: TimeGridProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const now = useClock()
   const nowTop =
@@ -45,6 +46,7 @@ export function TimeGrid({ days, events, onSlotClick, onEventClick }: TimeGridPr
       })
 
   const handleSlotClick = (day: Date, hour: number) => {
+    if (!onSlotClick) return
     const slot = new Date(day)
     slot.setHours(hour, 0, 0, 0)
     onSlotClick(roundToHalfHour(slot))
@@ -110,7 +112,12 @@ export function TimeGrid({ days, events, onSlotClick, onEventClick }: TimeGridPr
                 )}
 
                 {getItemsForDay(day).map((event) => (
-                  <EventBlock key={event.id} event={event} onClick={onEventClick} />
+                  <EventBlock
+                    key={event.id}
+                    event={event}
+                    onClick={onEventClick}
+                    showOwnerLabel={showOwnerLabels}
+                  />
                 ))}
               </div>
             ))}

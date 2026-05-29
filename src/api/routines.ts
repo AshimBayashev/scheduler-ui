@@ -11,6 +11,14 @@ export interface ApiRoutine {
   color: string
   active: boolean
   reminderMinutesBefore: number | null
+  hiddenFromFamily: boolean
+  ownerUserId?: string
+  ownerName?: string | null
+}
+
+export interface FetchRoutinesOptions {
+  forUserId?: string
+  scope?: 'family'
 }
 
 function toPayload(data: RoutineFormData) {
@@ -22,11 +30,16 @@ function toPayload(data: RoutineFormData) {
     daysOfWeek: data.daysOfWeek,
     color: data.color,
     reminderMinutesBefore: data.reminderMinutesBefore,
+    hiddenFromFamily: data.hiddenFromFamily ?? false,
   }
 }
 
-export function fetchRoutines() {
-  return apiFetch<ApiRoutine[]>('/routines')
+export function fetchRoutines(options: FetchRoutinesOptions = {}) {
+  const params = new URLSearchParams()
+  if (options.forUserId) params.set('forUserId', options.forUserId)
+  if (options.scope) params.set('scope', options.scope)
+  const query = params.toString()
+  return apiFetch<ApiRoutine[]>(`/routines${query ? `?${query}` : ''}`)
 }
 
 export function createRoutine(data: RoutineFormData) {
@@ -60,5 +73,8 @@ export function mapApiRoutine(routine: ApiRoutine): Routine {
     color: routine.color,
     active: routine.active,
     reminderMinutesBefore: routine.reminderMinutesBefore,
+    hiddenFromFamily: routine.hiddenFromFamily,
+    ownerUserId: routine.ownerUserId,
+    ownerName: routine.ownerName ?? undefined,
   }
 }

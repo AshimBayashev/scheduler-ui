@@ -8,11 +8,13 @@ interface EventBlockProps {
   event: CalendarEvent
   onClick: (event: CalendarEvent) => void
   compact?: boolean
+  showOwnerLabel?: boolean
 }
 
-export function EventBlock({ event, onClick, compact }: EventBlockProps) {
+export function EventBlock({ event, onClick, compact, showOwnerLabel }: EventBlockProps) {
   const color = event.color ?? 'var(--accent-primary)'
   const isRoutine = event.isRoutine
+  const ownerLabel = showOwnerLabel && event.ownerName ? event.ownerName : null
 
   if (compact) {
     return (
@@ -26,8 +28,9 @@ export function EventBlock({ event, onClick, compact }: EventBlockProps) {
           e.stopPropagation()
           onClick(event)
         }}
-        title={event.title}
+        title={ownerLabel ? `${ownerLabel}: ${event.title}` : event.title}
       >
+        {ownerLabel && <span className="event-block-owner">{ownerLabel}</span>}
         <span className="event-block-title">{event.title}</span>
       </button>
     )
@@ -51,6 +54,7 @@ export function EventBlock({ event, onClick, compact }: EventBlockProps) {
         onClick(event)
       }}
     >
+      {ownerLabel && <span className="event-block-owner">{ownerLabel}</span>}
       <span className="event-block-title">{event.title}</span>
       {!isRoutine && (
         <span className="event-block-time">

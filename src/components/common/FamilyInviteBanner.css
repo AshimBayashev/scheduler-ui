@@ -1,0 +1,79 @@
+.family-invite-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+  margin: 0 16px 12px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--accent-primary) 35%, var(--border-color));
+  background: color-mix(in srgb, var(--accent-primary) 8%, var(--surface-secondary));
+}
+
+.family-invite-banner-text {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.family-invite-banner-text strong {
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.family-invite-banner-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.family-invite-banner-btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.family-invite-banner-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.family-invite-banner-btn--primary {
+  border: none;
+  background: var(--accent-primary);
+  color: #fff;
+}
+
+.family-invite-banner-btn--primary:hover:not(:disabled) {
+  background: var(--accent-primary-hover);
+}
+
+.family-invite-banner-btn--secondary {
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-primary);
+}
+
+.family-invite-banner-btn--secondary:hover:not(:disabled) {
+  background: var(--surface-hover);
+}
+
+.family-invite-banner-error {
+  width: 100%;
+  margin: 0;
+  font-size: 12px;
+  color: var(--danger, #c4314b);
+}
+
+@media (max-width: 768px) {
+  .family-invite-banner {
+    margin: 0 12px 10px;
+  }
+}

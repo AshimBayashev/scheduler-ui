@@ -97,6 +97,12 @@
   min-width: 0;
 }
 
+.calendar-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .view-switcher {
   display: flex;
   border: 1px solid var(--border-color);

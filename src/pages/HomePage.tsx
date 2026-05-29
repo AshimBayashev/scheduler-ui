@@ -1,20 +1,24 @@
-import { useMemo } from 'react'
-import { format } from 'date-fns'
+import { useMemo, useState } from 'react'
+import { format, endOfDay, startOfDay } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { Link } from 'react-router-dom'
+import { getMemberDisplayName } from '../api/family'
 import { useAuth } from '../context/AuthContext'
 import { useEvents } from '../context/EventsContext'
+import { useFamily } from '../context/FamilyContext'
 import { useRoutines } from '../context/RoutinesContext'
+import { FamilyMemberSwitcher } from '../components/common/FamilyMemberSwitcher'
 import { ThemeSelect } from '../components/common/ThemeSelect'
 import { UserAvatar } from '../components/common/UserAvatar'
 import { WeatherIcon } from '../components/common/WeatherIcon'
 import { useClock } from '../hooks/useClock'
+import { useMemberCalendarData } from '../hooks/useMemberCalendarData'
 import { MOBILE_BREAKPOINT, useMediaQuery } from '../hooks/useMediaQuery'
 import { useWeather } from '../hooks/useWeather'
 import { WEATHER_LABELS, weatherCodeToKind } from '../data/weatherCodes'
 import { getDisplayName, getGreeting, isLikelyFeminineName } from '../utils/greeting'
 import { getTodayPlans } from '../utils/todayPlans'
-import type { CalendarEvent } from '../types/event'
+import type { CalendarEvent, CalendarMemberScope } from '../types/event'
 import './HomePage.css'
 
 const ORBIT_RADIUS = 210
@@ -41,23 +45,58 @@ function orbitPosition(index: number, total: number) {
 export function HomePage() {
   const isMobile = useMediaQuery(MOBILE_BREAKPOINT)
   const { user } = useAuth()
+  const { overview } = useFamily()
   const { events, loading: eventsLoading } = useEvents()
   const { routines, loading: routinesLoading } = useRoutines()
+  const [memberScope, setMemberScope] = useState<CalendarMemberScope>('self')
   const now = useClock()
   const { temperature, weatherCode, loading: weatherLoading, error: weatherError } = useWeather()
+
+  const todayRange = useMemo(
+    () => ({
+      from: startOfDay(now),
+      to: endOfDay(now),
+    }),
+    [now.getFullYear(), now.getMonth(), now.getDate()],
+  )
+
+  const memberData = useMemberCalendarData({
+    scope: memberScope,
+    from: todayRange.from,
+    to: todayRange.to,
+    enabled: memberScope !== 'self',
+  })
+
+  const activeEvents = memberScope === 'self' ? events : memberData.events
+  const activeRoutines = memberScope === 'self' ? routines : memberData.routines
 
   const displayName = user ? getDisplayName(user.name, user.email) : ''
   const feminine = isLikelyFeminineName(displayName)
   const greeting = getGreeting(now.getHours(), feminine)
 
+  const viewedMember =
+    memberScope !== 'self'
+      ? overview?.members.find((m) => m.userId === memberScope)
+      : null
+
+  const plansOwnerLabel =
+    memberScope === 'self'
+      ? 'Планы на сегодня'
+      : viewedMember
+        ? `Планы ${getMemberDisplayName(viewedMember)}`
+        : 'Планы на сегодня'
+
   const todayPlans = useMemo(
-    () => getTodayPlans(events, routines),
-    [events, routines],
+    () => getTodayPlans(activeEvents, activeRoutines),
+    [activeEvents, activeRoutines],
   )
 
   const visiblePlans = todayPlans.slice(0, MAX_ORBIT_ITEMS)
   const hiddenCount = Math.max(0, todayPlans.length - MAX_ORBIT_ITEMS)
-  const loading = eventsLoading || routinesLoading
+  const loading =
+    memberScope === 'self'
+      ? eventsLoading || routinesLoading
+      : memberData.loading
 
   return (
     <div className="home-page">
@@ -79,6 +118,14 @@ export function HomePage() {
         </div>
         <ThemeSelect />
       </header>
+
+      {overview?.inFamily && (
+        <FamilyMemberSwitcher
+          value={memberScope}
+          onChange={setMemberScope}
+          className="home-family-switcher"
+        />
+      )}
 
       <section className="home-hero" aria-label="Сегодня">
         <div className={`home-hero-scene${isMobile ? ' home-hero-scene--mobile' : ''}`}>
@@ -125,6 +172,7 @@ export function HomePage() {
               plans={visiblePlans}
               totalCount={todayPlans.length}
               hiddenCount={hiddenCount}
+              title={plansOwnerLabel}
             />
           ) : (
             <div className="home-orbit-layer">
@@ -159,7 +207,7 @@ export function HomePage() {
 
         {!isMobile && (
           <p className="home-hero-caption">
-            Планы на сегодня · {todayPlans.length}{' '}
+            {plansOwnerLabel} · {todayPlans.length}{' '}
             {todayPlans.length === 1 ? 'запись' : todayPlans.length < 5 ? 'записи' : 'записей'}
           </p>
         )}
@@ -173,16 +221,18 @@ function HomePlansList({
   plans,
   totalCount,
   hiddenCount,
+  title,
 }: {
   loading: boolean
   plans: CalendarEvent[]
   totalCount: number
   hiddenCount: number
+  title: string
 }) {
   return (
     <div className="home-plans-list">
       <h2 className="home-plans-list-title">
-        Планы на сегодня
+        {title}
         {totalCount > 0 && <span className="home-plans-list-count">{totalCount}</span>}
       </h2>
 

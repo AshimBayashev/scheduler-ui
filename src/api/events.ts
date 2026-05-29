@@ -10,6 +10,16 @@ export interface ApiEvent {
   allDay: boolean
   color: string
   reminderMinutesBefore: number | null
+  hiddenFromFamily: boolean
+  ownerUserId?: string
+  ownerName?: string | null
+}
+
+export interface FetchEventsOptions {
+  from?: string
+  to?: string
+  forUserId?: string
+  scope?: 'family'
 }
 
 function toPayload(data: EventFormData) {
@@ -21,13 +31,16 @@ function toPayload(data: EventFormData) {
     allDay: data.allDay,
     color: data.color,
     reminderMinutesBefore: data.reminderMinutesBefore,
+    hiddenFromFamily: data.hiddenFromFamily ?? false,
   }
 }
 
-export function fetchEvents(from?: string, to?: string) {
+export function fetchEvents(options: FetchEventsOptions = {}) {
   const params = new URLSearchParams()
-  if (from) params.set('from', from)
-  if (to) params.set('to', to)
+  if (options.from) params.set('from', options.from)
+  if (options.to) params.set('to', options.to)
+  if (options.forUserId) params.set('forUserId', options.forUserId)
+  if (options.scope) params.set('scope', options.scope)
   const query = params.toString()
   return apiFetch<ApiEvent[]>(`/events${query ? `?${query}` : ''}`)
 }
@@ -62,5 +75,8 @@ export function mapApiEvent(event: ApiEvent) {
     allDay: event.allDay,
     color: event.color,
     reminderMinutesBefore: event.reminderMinutesBefore,
+    hiddenFromFamily: event.hiddenFromFamily,
+    ownerUserId: event.ownerUserId,
+    ownerName: event.ownerName ?? undefined,
   }
 }

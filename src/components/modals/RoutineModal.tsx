@@ -14,6 +14,7 @@ interface RoutineModalProps {
   onSave: (data: RoutineFormData) => void | Promise<void>
   onDelete?: () => void | Promise<void>
   editingRoutine?: Routine | null
+  canHideFromFamily?: boolean
 }
 
 export function RoutineModal({
@@ -22,6 +23,7 @@ export function RoutineModal({
   onSave,
   onDelete,
   editingRoutine,
+  canHideFromFamily = false,
 }: RoutineModalProps) {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -33,6 +35,7 @@ export function RoutineModal({
   const [reminderMinutesBefore, setReminderMinutesBefore] = useState<ReminderMinutes>(
     DEFAULT_REMINDER_MINUTES,
   )
+  const [hiddenFromFamily, setHiddenFromFamily] = useState(false)
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
@@ -47,6 +50,7 @@ export function RoutineModal({
       setReminderMinutesBefore(
         normalizeReminderMinutes(editingRoutine?.reminderMinutesBefore),
       )
+      setHiddenFromFamily(editingRoutine?.hiddenFromFamily ?? false)
     }
   }, [isOpen, editingRoutine])
 
@@ -106,6 +110,7 @@ export function RoutineModal({
         daysOfWeek,
         color,
         reminderMinutesBefore,
+        hiddenFromFamily: canHideFromFamily ? hiddenFromFamily : false,
       })
       onClose()
     } finally {
@@ -194,6 +199,17 @@ export function RoutineModal({
             value={reminderMinutesBefore}
             onChange={setReminderMinutesBefore}
           />
+
+          {canHideFromFamily && (
+            <label className="form-checkbox">
+              <input
+                type="checkbox"
+                checked={hiddenFromFamily}
+                onChange={(e) => setHiddenFromFamily(e.target.checked)}
+              />
+              Скрыто от семьи
+            </label>
+          )}
 
           <div className="form-field">
             <label>Дни недели</label>

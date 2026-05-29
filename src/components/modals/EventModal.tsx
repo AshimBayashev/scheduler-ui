@@ -15,6 +15,7 @@ interface EventModalProps {
   onDelete?: () => void | Promise<void>
   initialData?: Partial<EventFormData>
   editingEvent?: CalendarEvent | null
+  canHideFromFamily?: boolean
 }
 
 function toLocalDatetimeString(date: Date): string {
@@ -33,6 +34,7 @@ export function EventModal({
   onDelete,
   initialData,
   editingEvent,
+  canHideFromFamily = false,
 }: EventModalProps) {
   const now = new Date()
   const defaultStart = initialData?.start ?? now
@@ -46,6 +48,9 @@ export function EventModal({
   const [color, setColor] = useState<string>(() => resolveFormColor(initialData?.color))
   const [reminderMinutesBefore, setReminderMinutesBefore] = useState<ReminderMinutes>(() =>
     normalizeReminderMinutes(initialData?.reminderMinutesBefore),
+  )
+  const [hiddenFromFamily, setHiddenFromFamily] = useState(
+    initialData?.hiddenFromFamily ?? editingEvent?.hiddenFromFamily ?? false,
   )
   const [timeError, setTimeError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
@@ -64,6 +69,9 @@ export function EventModal({
         normalizeReminderMinutes(
           initialData?.reminderMinutesBefore ?? editingEvent?.reminderMinutesBefore,
         ),
+      )
+      setHiddenFromFamily(
+        initialData?.hiddenFromFamily ?? editingEvent?.hiddenFromFamily ?? false,
       )
       setTimeError(null)
     }
@@ -92,6 +100,7 @@ export function EventModal({
         allDay,
         color,
         reminderMinutesBefore,
+        hiddenFromFamily: canHideFromFamily ? hiddenFromFamily : false,
       })
       onClose()
     } finally {
@@ -157,6 +166,17 @@ export function EventModal({
             />
             Весь день
           </label>
+
+          {canHideFromFamily && (
+            <label className="form-checkbox">
+              <input
+                type="checkbox"
+                checked={hiddenFromFamily}
+                onChange={(e) => setHiddenFromFamily(e.target.checked)}
+              />
+              Скрыто от семьи
+            </label>
+          )}
 
           {!allDay && (
             <div className="form-row">

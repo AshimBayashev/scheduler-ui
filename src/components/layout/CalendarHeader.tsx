@@ -9,6 +9,7 @@ interface CalendarHeaderProps {
   onNavigate: (direction: -1 | 1) => void
   onToday: () => void
   onMenuClick?: () => void
+  toolbar?: React.ReactNode
 }
 
 const VIEWS: { id: CalendarView; label: string; shortLabel: string }[] = [
@@ -24,6 +25,7 @@ export function CalendarHeader({
   onNavigate,
   onToday,
   onMenuClick,
+  toolbar,
 }: CalendarHeaderProps) {
   return (
     <header className="calendar-header">
@@ -88,6 +90,8 @@ export function CalendarHeader({
       </div>
 
       <h1 className="calendar-title">{formatDateRange(currentDate, view)}</h1>
+
+      {toolbar && <div className="calendar-toolbar">{toolbar}</div>}
 
       <div className="view-switcher view-switcher--mobile" role="tablist">
         {VIEWS.map((v) => (

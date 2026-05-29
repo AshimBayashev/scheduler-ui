@@ -48,6 +48,10 @@
   letter-spacing: -0.02em;
 }
 
+.home-family-switcher {
+  margin-bottom: 20px;
+}
+
 .home-hero {
   display: flex;
   flex-direction: column;

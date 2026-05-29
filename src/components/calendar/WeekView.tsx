@@ -5,11 +5,18 @@ import { TimeGrid } from './TimeGrid'
 interface WeekViewProps {
   date: Date
   events: CalendarEvent[]
-  onSlotClick: (date: Date) => void
+  onSlotClick?: (date: Date) => void
   onEventClick: (event: CalendarEvent) => void
+  showOwnerLabels?: boolean
 }
 
-export function WeekView({ date, events, onSlotClick, onEventClick }: WeekViewProps) {
+export function WeekView({
+  date,
+  events,
+  onSlotClick,
+  onEventClick,
+  showOwnerLabels,
+}: WeekViewProps) {
   const days = getWeekDays(date)
 
   return (
@@ -18,6 +25,7 @@ export function WeekView({ date, events, onSlotClick, onEventClick }: WeekViewPr
       events={events}
       onSlotClick={onSlotClick}
       onEventClick={onEventClick}
+      showOwnerLabels={showOwnerLabels}
     />
   )
 }

@@ -8,6 +8,9 @@ export interface Routine {
   color: string
   active: boolean
   reminderMinutesBefore: number | null
+  hiddenFromFamily?: boolean
+  ownerUserId?: string
+  ownerName?: string
 }
 
 export interface RoutineFormData {
@@ -18,6 +21,7 @@ export interface RoutineFormData {
   daysOfWeek: number[]
   color: string
   reminderMinutesBefore: number | null
+  hiddenFromFamily?: boolean
 }
 
 export const WEEKDAY_LABELS = [

@@ -9,11 +9,18 @@ interface MonthViewProps {
   events: CalendarEvent[]
   onDayClick: (date: Date) => void
   onEventClick: (event: CalendarEvent) => void
+  showOwnerLabels?: boolean
 }
 
 const WEEKDAYS = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
 
-export function MonthView({ date, events, onDayClick, onEventClick }: MonthViewProps) {
+export function MonthView({
+  date,
+  events,
+  onDayClick,
+  onEventClick,
+  showOwnerLabels,
+}: MonthViewProps) {
   const days = getMonthDays(date)
 
   const getEventsForDay = (day: Date) =>
@@ -57,6 +64,7 @@ export function MonthView({ date, events, onDayClick, onEventClick }: MonthViewP
                     event={event}
                     onClick={onEventClick}
                     compact
+                    showOwnerLabel={showOwnerLabels}
                   />
                 ))}
                 {dayEvents.length > 3 && (

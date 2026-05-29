@@ -32,6 +32,9 @@ export function expandRoutines(
         end,
         color: routine.color,
         reminderMinutesBefore: routine.reminderMinutesBefore,
+        hiddenFromFamily: routine.hiddenFromFamily,
+        ownerUserId: routine.ownerUserId,
+        ownerName: routine.ownerName,
         isRoutine: true,
       })
     }

@@ -16,6 +16,7 @@ interface SidebarProps {
   onClose?: () => void
   isOpen?: boolean
   eventDates: Date[]
+  readOnly?: boolean
 }
 
 export function Sidebar({
@@ -28,6 +29,7 @@ export function Sidebar({
   onClose,
   isOpen = false,
   eventDates,
+  readOnly = false,
 }: SidebarProps) {
   const { user, logout } = useAuth()
   const sidebarQuote = useSidebarQuote(user?.id)
@@ -72,15 +74,19 @@ export function Sidebar({
         </div>
       </div>
 
-      <button type="button" className="sidebar-new-btn" onClick={handleNewEvent}>
-        <span className="sidebar-new-icon">+</span>
-        Новое дело
-      </button>
+      {!readOnly && (
+        <>
+          <button type="button" className="sidebar-new-btn" onClick={handleNewEvent}>
+            <span className="sidebar-new-icon">+</span>
+            Новое дело
+          </button>
 
-      <button type="button" className="sidebar-routines-btn" onClick={handleNewRoutine}>
-        <span className="sidebar-new-icon">↻</span>
-        Новая рутина
-      </button>
+          <button type="button" className="sidebar-routines-btn" onClick={handleNewRoutine}>
+            <span className="sidebar-new-icon">↻</span>
+            Новая рутина
+          </button>
+        </>
+      )}
 
       <MiniCalendar
         selectedDate={selectedDate}
@@ -100,9 +106,12 @@ export function Sidebar({
                 type="button"
                 className="sidebar-routine-item"
                 onClick={() => {
-                  onEditRoutine(routine)
-                  onClose?.()
+                  if (!readOnly) {
+                    onEditRoutine(routine)
+                    onClose?.()
+                  }
                 }}
+                disabled={readOnly}
               >
                 <span
                   className="sidebar-routine-dot"

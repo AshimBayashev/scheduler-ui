@@ -2,6 +2,7 @@ import { type FormEvent, useRef, useState } from 'react'
 import { ApiError, useAuth } from '../context/AuthContext'
 import { changePassword, updateProfile } from '../api/profile'
 import { TelegramConnect } from '../components/common/TelegramConnect'
+import { FamilySection } from '../components/common/FamilySection'
 import { UserAvatar } from '../components/common/UserAvatar'
 import { resizeAvatar } from '../utils/resizeAvatar'
 import './ProfilePage.css'
@@ -10,6 +11,7 @@ const SECTIONS = [
   { id: 'profile-about', label: 'Обо мне' },
   { id: 'profile-security', label: 'Безопасность' },
   { id: 'profile-notify', label: 'Напоминания' },
+  { id: 'profile-family', label: 'Семья' },
 ] as const
 
 export function ProfilePage() {
@@ -274,6 +276,14 @@ export function ProfilePage() {
               <TelegramConnect embedded />
             </section>
           </div>
+
+          <section id="profile-family" className="profile-zone">
+            <div className="profile-zone-head">
+              <h2 className="profile-zone-title">Семья</h2>
+              <p className="profile-zone-lead">Общий календарь и дела близких</p>
+            </div>
+            <FamilySection />
+          </section>
         </div>
       </div>
     </div>

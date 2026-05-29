@@ -57,7 +57,6 @@ export function NavRail() {
 
   return (
     <nav className="nav-rail" aria-label="Основная навигация">
-      <div className="nav-rail-links">
       <NavLink
         to="/"
         end
@@ -89,7 +88,6 @@ export function NavRail() {
       >
         <SettingsIcon />
       </NavLink>
-      </div>
 
       <button
         type="button"

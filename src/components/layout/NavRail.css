@@ -13,13 +13,6 @@
   z-index: 120;
 }
 
-.nav-rail-links {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-
 .nav-rail-logout {
   display: flex;
   align-items: center;
@@ -81,28 +74,21 @@
     align-items: center;
     justify-content: space-between;
     gap: 0;
-    padding: 8px 16px;
+    padding: 8px 20px;
     padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
     border-right: none;
     border-top: 1px solid var(--border-color);
   }
 
-  .nav-rail-links {
-    flex: 1;
-    flex-direction: row;
-    justify-content: center;
-    gap: 8px;
-  }
-
   .nav-rail-logout {
     margin-top: 0;
-    margin-left: 0;
     flex-shrink: 0;
     width: 48px;
     height: 48px;
   }
 
   .nav-rail-link {
+    flex-shrink: 0;
     width: 48px;
     height: 48px;
   }

@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+set -e
+echo "Running UI tests before push..."
+npm test

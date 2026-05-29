@@ -121,7 +121,6 @@ export function ProfilePage() {
     <div className="profile-page">
       <header className="profile-header">
         <h1 className="profile-title">Настройки</h1>
-        <p className="profile-subtitle">Три блока — можно пройти по порядку или сразу к нужному</p>
       </header>
 
       <div className="profile-shell">

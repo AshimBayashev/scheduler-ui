@@ -22,14 +22,6 @@
   letter-spacing: -0.02em;
 }
 
-.profile-subtitle {
-  margin: 8px 0 0;
-  max-width: 36ch;
-  font-size: 14px;
-  line-height: 1.45;
-  color: var(--text-secondary);
-}
-
 .profile-shell {
   max-width: 960px;
   margin: 0 auto;
@@ -45,8 +37,6 @@
   top: 0;
   z-index: 2;
   padding: 4px 0 12px;
-  background: color-mix(in srgb, var(--surface-primary) 88%, transparent);
-  backdrop-filter: blur(8px);
 }
 
 .profile-nav-link {
@@ -296,8 +286,6 @@
     position: sticky;
     top: 24px;
     padding: 0;
-    background: transparent;
-    backdrop-filter: none;
   }
 
   .profile-nav-link {

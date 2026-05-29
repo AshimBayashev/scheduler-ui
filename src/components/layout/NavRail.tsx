@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
 import './NavRail.css'
 
 function HomeIcon() {
@@ -23,9 +24,26 @@ function CalendarIcon() {
   )
 }
 
+function LogoutIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
 export function NavRail() {
+  const { logout } = useAuth()
+
   return (
     <nav className="nav-rail" aria-label="Основная навигация">
+      <div className="nav-rail-links">
       <NavLink
         to="/"
         end
@@ -47,6 +65,17 @@ export function NavRail() {
       >
         <CalendarIcon />
       </NavLink>
+      </div>
+
+      <button
+        type="button"
+        className="nav-rail-logout"
+        onClick={logout}
+        title="Выйти"
+        aria-label="Выйти"
+      >
+        <LogoutIcon />
+      </button>
     </nav>
   )
 }

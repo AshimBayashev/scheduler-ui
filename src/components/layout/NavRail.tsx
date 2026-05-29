@@ -24,6 +24,20 @@ function CalendarIcon() {
   )
 }
 
+function SettingsIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="12" cy="8" r="3.5" stroke="currentColor" strokeWidth="2" />
+      <path
+        d="M5 20v-1a7 7 0 0 1 14 0v1"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </svg>
+  )
+}
+
 function LogoutIcon() {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -64,6 +78,16 @@ export function NavRail() {
         aria-label="Календарь"
       >
         <CalendarIcon />
+      </NavLink>
+      <NavLink
+        to="/profile"
+        className={({ isActive }) =>
+          ['nav-rail-link', isActive && 'nav-rail-link--active'].filter(Boolean).join(' ')
+        }
+        title="Профиль"
+        aria-label="Профиль"
+      >
+        <SettingsIcon />
       </NavLink>
       </div>
 

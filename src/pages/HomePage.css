@@ -17,6 +17,16 @@
   margin-bottom: 32px;
 }
 
+.home-greeting {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.home-greeting-avatar {
+  flex-shrink: 0;
+}
+
 .home-greeting-line {
   margin: 0 0 4px;
   font-size: 15px;

@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext'
 import { useEvents } from '../context/EventsContext'
 import { useRoutines } from '../context/RoutinesContext'
 import { ThemeSelect } from '../components/common/ThemeSelect'
+import { UserAvatar } from '../components/common/UserAvatar'
 import { WeatherIcon } from '../components/common/WeatherIcon'
 import { useClock } from '../hooks/useClock'
 import { MOBILE_BREAKPOINT, useMediaQuery } from '../hooks/useMediaQuery'
@@ -62,8 +63,19 @@ export function HomePage() {
     <div className="home-page">
       <header className="home-header">
         <div className="home-greeting">
-          <p className="home-greeting-line">{greeting},</p>
-          <h1 className="home-greeting-name">{displayName}</h1>
+          {user && (
+            <UserAvatar
+              name={user.name}
+              email={user.email}
+              avatarUrl={user.avatarUrl}
+              size="sm"
+              className="home-greeting-avatar"
+            />
+          )}
+          <div>
+            <p className="home-greeting-line">{greeting},</p>
+            <h1 className="home-greeting-name">{displayName}</h1>
+          </div>
         </div>
         <ThemeSelect />
       </header>

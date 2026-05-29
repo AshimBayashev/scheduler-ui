@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom'
-import { TelegramConnect } from '../common/TelegramConnect'
+import { TelegramBanner } from '../common/TelegramBanner'
 import { NavRail } from './NavRail'
 import './AppShell.css'
 
@@ -8,9 +8,7 @@ export function AppShell() {
     <div className="app-shell">
       <NavRail />
       <div className="app-shell-main">
-        <div className="app-shell-notices">
-          <TelegramConnect />
-        </div>
+        <TelegramBanner />
         <Outlet />
       </div>
     </div>

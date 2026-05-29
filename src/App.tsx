@@ -4,6 +4,7 @@ import { AppShell } from './components/layout/AppShell'
 import { AuthPage } from './pages/AuthPage'
 import { HomePage } from './pages/HomePage'
 import { CalendarPage } from './pages/CalendarPage'
+import { ProfilePage } from './pages/ProfilePage'
 import './App.css'
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
         <Route element={<AppShell />}>
           <Route index element={<HomePage />} />
           <Route path="calendar" element={<CalendarPage />} />
+          <Route path="profile" element={<ProfilePage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

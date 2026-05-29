@@ -1,41 +1,24 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useState } from 'react'
 import {
   createTelegramLink,
-  fetchTelegramStatus,
   unlinkTelegram,
   type TelegramLinkResponse,
-  type TelegramStatus,
 } from '../../api/notifications'
+import { useTelegramStatus } from '../../hooks/useTelegramStatus'
 import './TelegramConnect.css'
 
+/** Секция Telegram на странице профиля — всегда видна, если бот включён на сервере. */
 export function TelegramConnect() {
-  const [status, setStatus] = useState<TelegramStatus | null>(null)
+  const { status, failed, refresh } = useTelegramStatus()
   const [link, setLink] = useState<TelegramLinkResponse | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [loadFailed, setLoadFailed] = useState(false)
 
-  const refresh = useCallback(async () => {
-    try {
-      const data = await fetchTelegramStatus()
-      setStatus(data)
-      setLoadFailed(false)
-    } catch {
-      setLoadFailed(true)
-    }
-  }, [])
+  if (!status && !failed) return null
 
-  useEffect(() => {
-    refresh()
-    const id = window.setInterval(refresh, 8000)
-    return () => window.clearInterval(id)
-  }, [refresh])
-
-  if (status === null && !loadFailed) return null
-
-  if (loadFailed) {
+  if (failed) {
     return (
-      <div className="telegram-connect telegram-connect--warn" role="region" aria-label="Telegram">
+      <div className="telegram-connect telegram-connect--settings telegram-connect--warn">
         <div className="telegram-connect-text">
           <strong>Telegram</strong>
           <span>Не удалось проверить статус. Обнови страницу.</span>
@@ -46,13 +29,10 @@ export function TelegramConnect() {
 
   if (status && !status.enabled) {
     return (
-      <div className="telegram-connect telegram-connect--warn" role="region" aria-label="Telegram">
+      <div className="telegram-connect telegram-connect--settings telegram-connect--warn">
         <div className="telegram-connect-text">
           <strong>Telegram</strong>
-          <span>
-            Бот не настроен на сервере. Добавь <code>TELEGRAM_BOT_TOKEN</code> в{' '}
-            <code>.env</code> на VPS и запусти <code>./deploy.sh</code>.
-          </span>
+          <span>Бот не настроен на сервере — напоминания в Telegram недоступны.</span>
         </div>
       </div>
     )
@@ -91,11 +71,14 @@ export function TelegramConnect() {
   }
 
   return (
-    <div className="telegram-connect" role="region" aria-label="Telegram">
+    <div className="telegram-connect telegram-connect--settings" role="region" aria-label="Telegram">
       <div className="telegram-connect-text">
         <strong>Telegram</strong>
         {status.linked ? (
-          <span>Подключён — напоминания приходят в бота</span>
+          <span>
+            Подключён{status.botUsername ? ` (@${status.botUsername})` : ''} — напоминания
+            приходят в бота
+          </span>
         ) : (
           <span>Напоминания о делах и рутинах прямо в Telegram</span>
         )}

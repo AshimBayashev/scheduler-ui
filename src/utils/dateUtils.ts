@@ -20,9 +20,10 @@ import { ru } from 'date-fns/locale'
 import type { CalendarView } from '../types/event'
 
 export const HOURS = Array.from({ length: 24 }, (_, i) => i)
-export const HOUR_HEIGHT = 48
+export const HOUR_HEIGHT = 72
 export const SLOTS_PER_HOUR = 2
 export const SLOT_HEIGHT = HOUR_HEIGHT / SLOTS_PER_HOUR
+export const MIN_EVENT_HEIGHT = HOUR_HEIGHT / 2
 export const DAY_SLOTS = HOURS.length * SLOTS_PER_HOUR
 
 export function formatDateRange(date: Date, view: CalendarView): string {
@@ -75,7 +76,7 @@ export function getEventTop(start: Date): number {
 export function getEventHeight(start: Date, end: Date): number {
   const durationMs = end.getTime() - start.getTime()
   const hours = durationMs / (1000 * 60 * 60)
-  return Math.max(hours * HOUR_HEIGHT, 24)
+  return Math.max(hours * HOUR_HEIGHT, MIN_EVENT_HEIGHT)
 }
 
 export function roundToHalfHour(date: Date): Date {

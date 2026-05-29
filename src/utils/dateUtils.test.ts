@@ -4,6 +4,7 @@ import {
   getEventHeight,
   getEventTop,
   HOUR_HEIGHT,
+  MIN_EVENT_HEIGHT,
   navigateDate,
   roundToHalfHour,
 } from './dateUtils'
@@ -17,7 +18,7 @@ describe('dateUtils', () => {
   it('calculates event height with minimum', () => {
     const start = new Date(2026, 4, 28, 10, 0, 0);
     const end = new Date(2026, 4, 28, 10, 15, 0);
-    expect(getEventHeight(start, end)).toBe(24);
+    expect(getEventHeight(start, end)).toBe(MIN_EVENT_HEIGHT);
   });
 
   it('rounds to half hour', () => {

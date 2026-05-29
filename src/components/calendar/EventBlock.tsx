@@ -1,6 +1,7 @@
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import type { CalendarEvent } from '../../types/event'
+import { OverflowTooltipText } from '../common/OverflowTooltipText'
 import { getEventHeight, getEventTop } from '../../utils/dateUtils'
 import './EventBlock.css'
 
@@ -28,10 +29,11 @@ export function EventBlock({ event, onClick, compact, showOwnerLabel }: EventBlo
           e.stopPropagation()
           onClick(event)
         }}
-        title={ownerLabel ? `${ownerLabel}: ${event.title}` : event.title}
       >
-        {ownerLabel && <span className="event-block-owner">{ownerLabel}</span>}
-        <span className="event-block-title">{event.title}</span>
+        {ownerLabel && (
+          <OverflowTooltipText text={ownerLabel} className="event-block-owner" />
+        )}
+        <OverflowTooltipText text={event.title} className="event-block-title" />
       </button>
     )
   }
@@ -54,8 +56,10 @@ export function EventBlock({ event, onClick, compact, showOwnerLabel }: EventBlo
         onClick(event)
       }}
     >
-      {ownerLabel && <span className="event-block-owner">{ownerLabel}</span>}
-      <span className="event-block-title">{event.title}</span>
+      {ownerLabel && (
+        <OverflowTooltipText text={ownerLabel} className="event-block-owner" />
+      )}
+      <OverflowTooltipText text={event.title} className="event-block-title" />
       {!isRoutine && (
         <span className="event-block-time">
           {format(event.start, 'HH:mm', { locale: ru })} –{' '}

@@ -6,7 +6,7 @@ import type { FamilyMemberVisual } from '../../utils/familyMemberColors'
 interface DayViewProps {
   date: Date
   events: CalendarEvent[]
-  onSlotClick?: (date: Date) => void
+  onSlotSelect?: (start: Date, end: Date) => void
   onEventClick: (event: CalendarEvent) => void
   memberVisuals?: Record<string, FamilyMemberVisual>
 }
@@ -14,7 +14,7 @@ interface DayViewProps {
 export function DayView({
   date,
   events,
-  onSlotClick,
+  onSlotSelect,
   onEventClick,
   memberVisuals,
 }: DayViewProps) {
@@ -22,7 +22,7 @@ export function DayView({
     <TimeGrid
       days={[date]}
       events={events}
-      onSlotClick={onSlotClick}
+      onSlotSelect={onSlotSelect}
       onEventClick={onEventClick}
       memberVisuals={memberVisuals}
     />

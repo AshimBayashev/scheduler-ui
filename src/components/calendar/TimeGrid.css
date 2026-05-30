@@ -103,22 +103,38 @@
   border-right: 1px solid var(--border-color);
 }
 
+.time-grid-column--interactive {
+  cursor: crosshair;
+  touch-action: pan-x pan-y;
+}
+
+.time-grid-column--selecting {
+  touch-action: none;
+}
+
+.time-grid-selection {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  background: color-mix(in srgb, var(--accent-primary) 24%, transparent);
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--accent-primary) 55%, transparent);
+  border-radius: 4px;
+  pointer-events: none;
+  z-index: 1;
+}
+
 .time-slot {
   width: 100%;
   border: none;
   border-bottom: 1px solid var(--border-subtle);
   background: transparent;
-  cursor: pointer;
   padding: 0;
   display: block;
+  pointer-events: none;
 }
 
 .time-slot--hour-end {
   border-bottom-color: var(--border-color);
-}
-
-.time-slot:hover {
-  background: var(--slot-hover);
 }
 
 .now-line {

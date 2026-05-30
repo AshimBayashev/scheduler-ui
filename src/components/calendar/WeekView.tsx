@@ -16,7 +16,7 @@ import type { FamilyMemberVisual } from '../../utils/familyMemberColors'
 interface WeekViewProps {
   date: Date
   events: CalendarEvent[]
-  onSlotClick?: (date: Date) => void
+  onSlotSelect?: (start: Date, end: Date) => void
   onEventClick: (event: CalendarEvent) => void
   memberVisuals?: Record<string, FamilyMemberVisual>
 }
@@ -24,7 +24,7 @@ interface WeekViewProps {
 export function WeekView({
   date,
   events,
-  onSlotClick,
+  onSlotSelect,
   onEventClick,
   memberVisuals,
 }: WeekViewProps) {
@@ -44,7 +44,7 @@ export function WeekView({
       <TimeGrid
         days={days}
         events={events}
-        onSlotClick={onSlotClick}
+        onSlotSelect={onSlotSelect}
         onEventClick={onEventClick}
         memberVisuals={memberVisuals}
         mobileWeekZoom={isMobile ? mobileZoom : undefined}

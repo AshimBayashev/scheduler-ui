@@ -113,11 +113,12 @@ export function CalendarPage() {
   )
 
   const openNewEventModal = useCallback(
-    (start?: Date) => {
+    (start?: Date, end?: Date) => {
       if (isReadOnly) return
       const slotStart = start ?? new Date()
+      const slotEnd = end ?? createDefaultEnd(slotStart)
       setEditingEvent(null)
-      setDraftSlot({ start: slotStart, end: createDefaultEnd(slotStart) })
+      setDraftSlot({ start: slotStart, end: slotEnd })
       setEventModalOpen(true)
     },
     [isReadOnly],
@@ -294,7 +295,7 @@ export function CalendarPage() {
                 <DayView
                   date={currentDate}
                   events={calendarItems}
-                  onSlotClick={isReadOnly ? undefined : openNewEventModal}
+                  onSlotSelect={isReadOnly ? undefined : openNewEventModal}
                   onEventClick={openEditEventModal}
                   memberVisuals={memberVisuals}
                 />
@@ -303,7 +304,7 @@ export function CalendarPage() {
                 <WeekView
                   date={currentDate}
                   events={calendarItems}
-                  onSlotClick={isReadOnly ? undefined : openNewEventModal}
+                  onSlotSelect={isReadOnly ? undefined : openNewEventModal}
                   onEventClick={openEditEventModal}
                   memberVisuals={memberVisuals}
                 />

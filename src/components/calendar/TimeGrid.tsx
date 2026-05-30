@@ -1,14 +1,18 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { format, isSameDay } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { useClock } from '../../hooks/useClock'
 import type { CalendarEvent } from '../../types/event'
 import {
-  createDefaultEnd,
   DAY_SLOTS,
   HOUR_HEIGHT,
   HOURS,
 } from '../../utils/dateUtils'
+import {
+  getSlotIndexFromOffset,
+  getSlotRangeBounds,
+  slotIndexToDate,
+} from '../../utils/timeGridUtils'
 import {
   MOBILE_WEEK_HOUR_HEIGHT_OVERVIEW,
   type WeekMobileZoom,
@@ -18,10 +22,16 @@ import './TimeGrid.css'
 
 import type { FamilyMemberVisual } from '../../utils/familyMemberColors'
 
+interface ActiveSelection {
+  day: Date
+  anchorSlot: number
+  currentSlot: number
+}
+
 interface TimeGridProps {
   days: Date[]
   events: CalendarEvent[]
-  onSlotClick?: (date: Date) => void
+  onSlotSelect?: (start: Date, end: Date) => void
   onEventClick: (event: CalendarEvent) => void
   memberVisuals?: Record<string, FamilyMemberVisual>
   /** Только неделя на телефоне */
@@ -31,12 +41,13 @@ interface TimeGridProps {
 export function TimeGrid({
   days,
   events,
-  onSlotClick,
+  onSlotSelect,
   onEventClick,
   memberVisuals,
   mobileWeekZoom,
 }: TimeGridProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
+  const [activeSelection, setActiveSelection] = useState<ActiveSelection | null>(null)
   const now = useClock()
   const isMobileWeek = days.length > 1 && !!mobileWeekZoom
   const hourHeight =
@@ -72,11 +83,91 @@ export function TimeGrid({
         return a.isRoutine ? -1 : 1
       })
 
-  const handleSlotClick = (day: Date, slotIndex: number) => {
-    if (!onSlotClick) return
-    const slot = new Date(day)
-    slot.setHours(Math.floor(slotIndex / 2), (slotIndex % 2) * 30, 0, 0)
-    onSlotClick(slot)
+  const getSlotFromPointer = (column: HTMLElement, clientY: number) => {
+    const rect = column.getBoundingClientRect()
+    return getSlotIndexFromOffset(clientY - rect.top, slotHeight)
+  }
+
+  const finishSelection = (selection: ActiveSelection) => {
+    const { startSlot, endSlot } = getSlotRangeBounds(
+      selection.anchorSlot,
+      selection.currentSlot,
+    )
+    const start = slotIndexToDate(selection.day, startSlot)
+    const end = slotIndexToDate(selection.day, endSlot + 1)
+    onSlotSelect?.(start, end)
+  }
+
+  const handleColumnPointerDown = (
+    event: React.PointerEvent<HTMLDivElement>,
+    day: Date,
+  ) => {
+    if (!onSlotSelect || event.button !== 0) return
+
+    event.currentTarget.setPointerCapture(event.pointerId)
+    const slot = getSlotFromPointer(event.currentTarget, event.clientY)
+    setActiveSelection({ day, anchorSlot: slot, currentSlot: slot })
+  }
+
+  const handleColumnPointerMove = (
+    event: React.PointerEvent<HTMLDivElement>,
+    day: Date,
+  ) => {
+    if (!activeSelection) return
+
+    const slot = getSlotFromPointer(event.currentTarget, event.clientY)
+    setActiveSelection((prev) => {
+      if (!prev || !isSameDay(prev.day, day)) return prev
+      if (slot === prev.currentSlot) return prev
+      return { ...prev, currentSlot: slot }
+    })
+  }
+
+  const handleColumnPointerUp = (
+    event: React.PointerEvent<HTMLDivElement>,
+    day: Date,
+  ) => {
+    if (!activeSelection || !isSameDay(activeSelection.day, day)) return
+
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId)
+    }
+
+    finishSelection(activeSelection)
+    setActiveSelection(null)
+  }
+
+  const handleColumnPointerCancel = (
+    event: React.PointerEvent<HTMLDivElement>,
+    day: Date,
+  ) => {
+    if (!activeSelection || !isSameDay(activeSelection.day, day)) return
+
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId)
+    }
+
+    setActiveSelection(null)
+  }
+
+  const renderSelectionOverlay = (day: Date) => {
+    if (!activeSelection || !isSameDay(activeSelection.day, day)) return null
+
+    const { startSlot, endSlot } = getSlotRangeBounds(
+      activeSelection.anchorSlot,
+      activeSelection.currentSlot,
+    )
+
+    return (
+      <div
+        className="time-grid-selection"
+        style={{
+          top: startSlot * slotHeight,
+          height: (endSlot - startSlot + 1) * slotHeight,
+        }}
+        aria-hidden
+      />
+    )
   }
 
   return (
@@ -128,40 +219,74 @@ export function TimeGrid({
           </div>
 
           <div className="time-grid-body">
-            {days.map((day) => (
-              <div key={day.toISOString()} className="time-grid-column">
-                {Array.from({ length: DAY_SLOTS }, (_, slotIndex) => (
-                  <button
-                    key={slotIndex}
-                    type="button"
-                    className={[
-                      'time-slot',
-                      slotIndex % 2 === 1 && 'time-slot--hour-end',
-                    ]
-                      .filter(Boolean)
-                      .join(' ')}
-                    style={{ height: slotHeight }}
-                    onClick={() => handleSlotClick(day, slotIndex)}
-                    aria-label={`Создать дело ${format(day, 'd MMM', { locale: ru })} ${String(Math.floor(slotIndex / 2)).padStart(2, '0')}:${slotIndex % 2 === 0 ? '00' : '30'}`}
-                  />
-                ))}
+            {days.map((day) => {
+              const isSelecting =
+                !!activeSelection && isSameDay(activeSelection.day, day)
 
-                {isSameDay(day, now) && (
-                  <div className="now-line" style={{ top: nowTop }} />
-                )}
+              return (
+                <div
+                  key={day.toISOString()}
+                  className={[
+                    'time-grid-column',
+                    isSelecting && 'time-grid-column--selecting',
+                    onSlotSelect && 'time-grid-column--interactive',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
+                  onPointerDown={
+                    onSlotSelect
+                      ? (event) => handleColumnPointerDown(event, day)
+                      : undefined
+                  }
+                  onPointerMove={
+                    onSlotSelect
+                      ? (event) => handleColumnPointerMove(event, day)
+                      : undefined
+                  }
+                  onPointerUp={
+                    onSlotSelect
+                      ? (event) => handleColumnPointerUp(event, day)
+                      : undefined
+                  }
+                  onPointerCancel={
+                    onSlotSelect
+                      ? (event) => handleColumnPointerCancel(event, day)
+                      : undefined
+                  }
+                >
+                  {Array.from({ length: DAY_SLOTS }, (_, slotIndex) => (
+                    <div
+                      key={slotIndex}
+                      className={[
+                        'time-slot',
+                        slotIndex % 2 === 1 && 'time-slot--hour-end',
+                      ]
+                        .filter(Boolean)
+                        .join(' ')}
+                      style={{ height: slotHeight }}
+                      aria-hidden
+                    />
+                  ))}
 
-                {getItemsForDay(day).map((event) => (
-                  <EventBlock
-                    key={event.id}
-                    event={event}
-                    onClick={onEventClick}
-                    memberVisuals={memberVisuals}
-                    dense={denseEvents}
-                    hourHeight={hourHeight}
-                  />
-                ))}
-              </div>
-            ))}
+                  {renderSelectionOverlay(day)}
+
+                  {isSameDay(day, now) && (
+                    <div className="now-line" style={{ top: nowTop }} />
+                  )}
+
+                  {getItemsForDay(day).map((event) => (
+                    <EventBlock
+                      key={event.id}
+                      event={event}
+                      onClick={onEventClick}
+                      memberVisuals={memberVisuals}
+                      dense={denseEvents}
+                      hourHeight={hourHeight}
+                    />
+                  ))}
+                </div>
+              )
+            })}
           </div>
         </div>
       </div>
@@ -169,4 +294,4 @@ export function TimeGrid({
   )
 }
 
-export { createDefaultEnd }
+export { createDefaultEnd } from '../../utils/dateUtils'

@@ -103,13 +103,13 @@
   border-right: 1px solid var(--border-color);
 }
 
-.time-grid-column--interactive {
+.time-grid-column--dragging {
   cursor: crosshair;
-  touch-action: pan-x pan-y;
+  touch-action: none;
 }
 
-.time-grid-column--selecting {
-  touch-action: none;
+.time-grid-column--dragging .time-slot {
+  cursor: crosshair;
 }
 
 .time-grid-selection {
@@ -128,9 +128,13 @@
   border: none;
   border-bottom: 1px solid var(--border-subtle);
   background: transparent;
+  cursor: pointer;
   padding: 0;
   display: block;
-  pointer-events: none;
+}
+
+.time-slot:hover {
+  background: var(--slot-hover);
 }
 
 .time-slot--hour-end {

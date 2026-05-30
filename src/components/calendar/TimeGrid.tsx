@@ -22,10 +22,21 @@ import './TimeGrid.css'
 
 import type { FamilyMemberVisual } from '../../utils/familyMemberColors'
 
-interface ActiveSelection {
+const DRAG_THRESHOLD_PX = 8
+
+interface SlotSelection {
   day: Date
   anchorSlot: number
   currentSlot: number
+}
+
+interface PendingPointer {
+  day: Date
+  anchorSlot: number
+  currentSlot: number
+  pointerId: number
+  startY: number
+  mode: 'pending' | 'dragging'
 }
 
 interface TimeGridProps {
@@ -47,7 +58,8 @@ export function TimeGrid({
   mobileWeekZoom,
 }: TimeGridProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
-  const [activeSelection, setActiveSelection] = useState<ActiveSelection | null>(null)
+  const pointerRef = useRef<PendingPointer | null>(null)
+  const [dragSelection, setDragSelection] = useState<SlotSelection | null>(null)
   const now = useClock()
   const isMobileWeek = days.length > 1 && !!mobileWeekZoom
   const hourHeight =
@@ -88,7 +100,7 @@ export function TimeGrid({
     return getSlotIndexFromOffset(clientY - rect.top, slotHeight)
   }
 
-  const finishSelection = (selection: ActiveSelection) => {
+  const finishSelection = (selection: SlotSelection) => {
     const { startSlot, endSlot } = getSlotRangeBounds(
       selection.anchorSlot,
       selection.currentSlot,
@@ -98,64 +110,128 @@ export function TimeGrid({
     onSlotSelect?.(start, end)
   }
 
-  const handleColumnPointerDown = (
-    event: React.PointerEvent<HTMLDivElement>,
+  const resetPointer = () => {
+    pointerRef.current = null
+    setDragSelection(null)
+  }
+
+  const handleSlotPointerDown = (
+    event: React.PointerEvent<HTMLButtonElement>,
     day: Date,
+    slotIndex: number,
   ) => {
     if (!onSlotSelect || event.button !== 0) return
 
     event.currentTarget.setPointerCapture(event.pointerId)
-    const slot = getSlotFromPointer(event.currentTarget, event.clientY)
-    setActiveSelection({ day, anchorSlot: slot, currentSlot: slot })
+    pointerRef.current = {
+      day,
+      anchorSlot: slotIndex,
+      currentSlot: slotIndex,
+      pointerId: event.pointerId,
+      startY: event.clientY,
+      mode: 'pending',
+    }
   }
 
-  const handleColumnPointerMove = (
-    event: React.PointerEvent<HTMLDivElement>,
+  const handleSlotPointerMove = (
+    event: React.PointerEvent<HTMLButtonElement>,
     day: Date,
   ) => {
-    if (!activeSelection) return
+    const interaction = pointerRef.current
+    if (
+      !interaction
+      || interaction.pointerId !== event.pointerId
+      || !isSameDay(interaction.day, day)
+    ) {
+      return
+    }
 
-    const slot = getSlotFromPointer(event.currentTarget, event.clientY)
-    setActiveSelection((prev) => {
-      if (!prev || !isSameDay(prev.day, day)) return prev
-      if (slot === prev.currentSlot) return prev
-      return { ...prev, currentSlot: slot }
+    const column = event.currentTarget.closest('.time-grid-column')
+    if (!(column instanceof HTMLElement)) return
+
+    const slot = getSlotFromPointer(column, event.clientY)
+
+    if (interaction.mode === 'pending') {
+      const movedEnough =
+        Math.abs(event.clientY - interaction.startY) >= DRAG_THRESHOLD_PX
+      const slotChanged = slot !== interaction.anchorSlot
+      if (!movedEnough && !slotChanged) return
+
+      interaction.mode = 'dragging'
+      interaction.currentSlot = slot
+      setDragSelection({
+        day: interaction.day,
+        anchorSlot: interaction.anchorSlot,
+        currentSlot: slot,
+      })
+      return
+    }
+
+    if (slot === interaction.currentSlot) return
+
+    interaction.currentSlot = slot
+    setDragSelection({
+      day: interaction.day,
+      anchorSlot: interaction.anchorSlot,
+      currentSlot: slot,
     })
   }
 
-  const handleColumnPointerUp = (
-    event: React.PointerEvent<HTMLDivElement>,
+  const handleSlotPointerUp = (
+    event: React.PointerEvent<HTMLButtonElement>,
     day: Date,
+    slotIndex: number,
   ) => {
-    if (!activeSelection || !isSameDay(activeSelection.day, day)) return
+    const interaction = pointerRef.current
+    if (
+      !interaction
+      || interaction.pointerId !== event.pointerId
+      || !isSameDay(interaction.day, day)
+    ) {
+      return
+    }
 
     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
       event.currentTarget.releasePointerCapture(event.pointerId)
     }
 
-    finishSelection(activeSelection)
-    setActiveSelection(null)
+    if (interaction.mode === 'dragging') {
+      finishSelection(interaction)
+    } else {
+      const start = slotIndexToDate(day, slotIndex)
+      const end = slotIndexToDate(day, slotIndex + 1)
+      onSlotSelect?.(start, end)
+    }
+
+    resetPointer()
   }
 
-  const handleColumnPointerCancel = (
-    event: React.PointerEvent<HTMLDivElement>,
+  const handleSlotPointerCancel = (
+    event: React.PointerEvent<HTMLButtonElement>,
     day: Date,
   ) => {
-    if (!activeSelection || !isSameDay(activeSelection.day, day)) return
+    const interaction = pointerRef.current
+    if (
+      !interaction
+      || interaction.pointerId !== event.pointerId
+      || !isSameDay(interaction.day, day)
+    ) {
+      return
+    }
 
     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
       event.currentTarget.releasePointerCapture(event.pointerId)
     }
 
-    setActiveSelection(null)
+    resetPointer()
   }
 
   const renderSelectionOverlay = (day: Date) => {
-    if (!activeSelection || !isSameDay(activeSelection.day, day)) return null
+    if (!dragSelection || !isSameDay(dragSelection.day, day)) return null
 
     const { startSlot, endSlot } = getSlotRangeBounds(
-      activeSelection.anchorSlot,
-      activeSelection.currentSlot,
+      dragSelection.anchorSlot,
+      dragSelection.currentSlot,
     )
 
     return (
@@ -220,43 +296,23 @@ export function TimeGrid({
 
           <div className="time-grid-body">
             {days.map((day) => {
-              const isSelecting =
-                !!activeSelection && isSameDay(activeSelection.day, day)
+              const isDragging =
+                !!dragSelection && isSameDay(dragSelection.day, day)
 
               return (
                 <div
                   key={day.toISOString()}
                   className={[
                     'time-grid-column',
-                    isSelecting && 'time-grid-column--selecting',
-                    onSlotSelect && 'time-grid-column--interactive',
+                    isDragging && 'time-grid-column--dragging',
                   ]
                     .filter(Boolean)
                     .join(' ')}
-                  onPointerDown={
-                    onSlotSelect
-                      ? (event) => handleColumnPointerDown(event, day)
-                      : undefined
-                  }
-                  onPointerMove={
-                    onSlotSelect
-                      ? (event) => handleColumnPointerMove(event, day)
-                      : undefined
-                  }
-                  onPointerUp={
-                    onSlotSelect
-                      ? (event) => handleColumnPointerUp(event, day)
-                      : undefined
-                  }
-                  onPointerCancel={
-                    onSlotSelect
-                      ? (event) => handleColumnPointerCancel(event, day)
-                      : undefined
-                  }
                 >
                   {Array.from({ length: DAY_SLOTS }, (_, slotIndex) => (
-                    <div
+                    <button
                       key={slotIndex}
+                      type="button"
                       className={[
                         'time-slot',
                         slotIndex % 2 === 1 && 'time-slot--hour-end',
@@ -264,7 +320,27 @@ export function TimeGrid({
                         .filter(Boolean)
                         .join(' ')}
                       style={{ height: slotHeight }}
-                      aria-hidden
+                      onPointerDown={
+                        onSlotSelect
+                          ? (event) => handleSlotPointerDown(event, day, slotIndex)
+                          : undefined
+                      }
+                      onPointerMove={
+                        onSlotSelect
+                          ? (event) => handleSlotPointerMove(event, day)
+                          : undefined
+                      }
+                      onPointerUp={
+                        onSlotSelect
+                          ? (event) => handleSlotPointerUp(event, day, slotIndex)
+                          : undefined
+                      }
+                      onPointerCancel={
+                        onSlotSelect
+                          ? (event) => handleSlotPointerCancel(event, day)
+                          : undefined
+                      }
+                      aria-label={`Создать дело ${format(day, 'd MMM', { locale: ru })} ${String(Math.floor(slotIndex / 2)).padStart(2, '0')}:${slotIndex % 2 === 0 ? '00' : '30'}`}
                     />
                   ))}
 

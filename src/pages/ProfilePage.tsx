@@ -5,6 +5,12 @@ import { TelegramConnect } from '../components/common/TelegramConnect'
 import { FamilySection } from '../components/common/FamilySection'
 import { UserAvatar } from '../components/common/UserAvatar'
 import { resizeAvatar } from '../utils/resizeAvatar'
+import {
+  PASSWORD_MAX_LENGTH,
+  PASSWORD_MIN_LENGTH,
+  PASSWORD_REQUIREMENTS_HINT,
+  validatePassword,
+} from '../utils/passwordPolicy'
 import './ProfilePage.css'
 
 const SECTIONS = [
@@ -102,6 +108,12 @@ export function ProfilePage() {
 
     if (newPassword !== confirmPassword) {
       setPasswordError('Пароли не совпадают')
+      return
+    }
+
+    const passwordValidationError = validatePassword(newPassword)
+    if (passwordValidationError) {
+      setPasswordError(passwordValidationError)
       return
     }
 
@@ -239,8 +251,9 @@ export function ProfilePage() {
                       type="password"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      minLength={6}
-                      maxLength={128}
+                      minLength={PASSWORD_MIN_LENGTH}
+                      maxLength={PASSWORD_MAX_LENGTH}
+                      placeholder={PASSWORD_REQUIREMENTS_HINT}
                       autoComplete="new-password"
                       required
                     />
@@ -251,8 +264,8 @@ export function ProfilePage() {
                       type="password"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      minLength={6}
-                      maxLength={128}
+                      minLength={PASSWORD_MIN_LENGTH}
+                      maxLength={PASSWORD_MAX_LENGTH}
                       autoComplete="new-password"
                       required
                     />

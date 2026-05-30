@@ -1,6 +1,12 @@
 import { useState, type FormEvent } from 'react'
 import { ApiError, useAuth } from '../context/AuthContext'
 import { ThemeSelect } from '../components/common/ThemeSelect'
+import {
+  PASSWORD_MAX_LENGTH,
+  PASSWORD_MIN_LENGTH,
+  PASSWORD_REQUIREMENTS_HINT,
+  validatePassword,
+} from '../utils/passwordPolicy'
 import './AuthPage.css'
 
 type AuthMode = 'login' | 'register'
@@ -23,6 +29,11 @@ export function AuthPage() {
       if (mode === 'login') {
         await login(email, password)
       } else {
+        const passwordError = validatePassword(password)
+        if (passwordError) {
+          setError(passwordError)
+          return
+        }
         await register(email, password, name || undefined)
       }
     } catch (err) {
@@ -75,7 +86,7 @@ export function AuthPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
+              placeholder={mode === 'login' ? 'Введите email' : 'you@example.com'}
               required
               autoComplete="email"
             />
@@ -88,9 +99,10 @@ export function AuthPage() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Минимум 6 символов"
+              placeholder={mode === 'login' ? 'Введите пароль' : PASSWORD_REQUIREMENTS_HINT}
               required
-              minLength={6}
+              minLength={mode === 'login' ? 6 : PASSWORD_MIN_LENGTH}
+              maxLength={PASSWORD_MAX_LENGTH}
               autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
             />
           </div>

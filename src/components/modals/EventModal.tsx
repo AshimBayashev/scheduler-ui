@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import type { CalendarEvent, EventFormData } from '../../types/event'
@@ -6,6 +6,7 @@ import { ColorPicker } from '../common/ColorPicker'
 import { ReminderSelect } from '../common/ReminderSelect'
 import { resolveFormColor } from '../../data/colorPalette'
 import { normalizeReminderMinutes, type ReminderMinutes } from '../../data/reminders'
+import { useModalKeyboardShortcuts } from '../../hooks/useModalKeyboardShortcuts'
 import './EventModal.css'
 
 interface EventModalProps {
@@ -54,6 +55,9 @@ export function EventModal({
   )
   const [timeError, setTimeError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const formRef = useRef<HTMLFormElement>(null)
+
+  useModalKeyboardShortcuts(isOpen, onClose, formRef)
 
   useEffect(() => {
     if (isOpen) {
@@ -126,7 +130,7 @@ export function EventModal({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="modal-form">
+        <form ref={formRef} onSubmit={handleSubmit} className="modal-form">
           <div className="form-field">
             <label htmlFor="event-title">Название</label>
             <input

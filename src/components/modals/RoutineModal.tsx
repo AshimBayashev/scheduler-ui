@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Routine, RoutineFormData } from '../../types/routine'
 import { DAY_PRESETS, WEEKDAY_LABELS } from '../../types/routine'
 import { ColorPicker } from '../common/ColorPicker'
 import { ReminderSelect } from '../common/ReminderSelect'
 import { resolveFormColor } from '../../data/colorPalette'
 import { DEFAULT_REMINDER_MINUTES, normalizeReminderMinutes, type ReminderMinutes } from '../../data/reminders'
+import { useModalKeyboardShortcuts } from '../../hooks/useModalKeyboardShortcuts'
 import '../modals/EventModal.css'
 import './RoutineModal.css'
 
@@ -37,6 +38,9 @@ export function RoutineModal({
   )
   const [hiddenFromFamily, setHiddenFromFamily] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const formRef = useRef<HTMLFormElement>(null)
+
+  useModalKeyboardShortcuts(isOpen, onClose, formRef)
 
   useEffect(() => {
     if (isOpen) {
@@ -136,7 +140,7 @@ export function RoutineModal({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="modal-form">
+        <form ref={formRef} onSubmit={handleSubmit} className="modal-form">
           <div className="form-field">
             <label htmlFor="routine-title">Название</label>
             <input

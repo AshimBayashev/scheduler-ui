@@ -1,18 +1,15 @@
 .profile-page {
   flex: 1;
   min-height: 0;
+  overflow-x: clip;
   overflow-y: auto;
   padding: 24px 28px 48px;
-  --ambient-glow-a: radial-gradient(
-    ellipse 70% 50% at 15% 0%,
-    var(--home-glow-a, transparent),
-    transparent 65%
-  );
-  --ambient-glow-b: radial-gradient(
-    ellipse 40% 35% at 90% 100%,
-    var(--home-glow-b, transparent),
-    transparent 60%
-  );
+  --ambient-glow-a-size: 70% 50%;
+  --ambient-glow-a-x: 15%;
+  --ambient-glow-a-y: 0%;
+  --ambient-glow-b-size: 40% 35%;
+  --ambient-glow-b-x: 90%;
+  --ambient-glow-b-y: 100%;
 }
 
 .profile-header {

@@ -85,6 +85,28 @@
   opacity: 0.65;
 }
 
+.home-orbit-ring-spin {
+  transform-box: view-box;
+  transform-origin: 200px 250px;
+  animation: home-orbit-ring-rotate 42s linear infinite;
+}
+
+@keyframes home-orbit-ring-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-orbit-ring-spin {
+    animation: none;
+  }
+}
+
 .home-hero-core {
   position: absolute;
   left: 38%;

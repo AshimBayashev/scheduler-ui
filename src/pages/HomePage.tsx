@@ -135,7 +135,9 @@ export function HomePage() {
               viewBox="0 0 500 500"
               aria-hidden="true"
             >
-              <circle cx="200" cy="250" r={ORBIT_RADIUS} className="home-orbit-ring-stroke" />
+              <g className="home-orbit-ring-spin">
+                <circle cx="200" cy="250" r={ORBIT_RADIUS} className="home-orbit-ring-stroke" />
+              </g>
             </svg>
           )}
 

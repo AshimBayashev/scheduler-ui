@@ -99,7 +99,7 @@ export function HomePage() {
       : memberData.loading
 
   return (
-    <div className="home-page">
+    <div className="home-page ambient-glow-page">
       <header className="home-header">
         <div className="home-greeting">
           <p className="home-greeting-line">{greeting},</p>

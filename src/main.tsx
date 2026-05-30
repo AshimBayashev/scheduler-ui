@@ -6,6 +6,7 @@ import { FamilyProvider } from './context/FamilyContext'
 import { EventsProvider } from './context/EventsContext'
 import { RoutinesProvider } from './context/RoutinesContext'
 import './styles/themes.css'
+import './styles/ambientGlows.css'
 import './index.css'
 import App from './App'
 

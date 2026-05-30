@@ -1,0 +1,64 @@
+.ambient-glow-page {
+  position: relative;
+  isolation: isolate;
+  background: var(--surface-primary);
+}
+
+.ambient-glow-page::before,
+.ambient-glow-page::after {
+  content: '';
+  position: absolute;
+  inset: -12%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ambient-glow-page::before {
+  background: var(--ambient-glow-a, none);
+}
+
+.ambient-glow-page::after {
+  background: var(--ambient-glow-b, none);
+}
+
+.ambient-glow-page > * {
+  position: relative;
+  z-index: 1;
+}
+
+@media (min-width: 769px) {
+  .ambient-glow-page::before {
+    animation: ambient-glow-drift-a 22s ease-in-out infinite alternate;
+  }
+
+  .ambient-glow-page::after {
+    animation: ambient-glow-drift-b 28s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes ambient-glow-drift-a {
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+
+  to {
+    transform: translate(3.5%, -2.5%) scale(1.04);
+  }
+}
+
+@keyframes ambient-glow-drift-b {
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+
+  to {
+    transform: translate(-3%, 3.5%) scale(1.03);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient-glow-page::before,
+  .ambient-glow-page::after {
+    animation: none;
+  }
+}

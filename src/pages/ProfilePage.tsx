@@ -120,7 +120,7 @@ export function ProfilePage() {
   }
 
   return (
-    <div className="profile-page">
+    <div className="profile-page ambient-glow-page">
       <header className="profile-header">
         <h1 className="profile-title">Настройки</h1>
       </header>
